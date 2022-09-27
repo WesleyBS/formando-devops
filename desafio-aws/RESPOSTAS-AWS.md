@@ -132,3 +132,5 @@ Então os dados abaixo foram colocados para cumprir com o desafio anterior e est
 
 <img src="desafio4.2.png" alt="resposta web wes"/>
 
+## 5 - Balanceamento
+
