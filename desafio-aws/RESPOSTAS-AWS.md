@@ -60,7 +60,7 @@ Então, ainda na página de EC2, naveguei pelo o menu lateral esquerdo até "par
 Após baixá-la, extrai a chave publica da mesma e desliguei a instância para que fosse possível editar os dados de usuário e inserir a nova chave
 
     ❯ ssh-keygen -y -f aws-lab-key.pem                  
-    ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCQGDdEtLzghrHBJSDJYdxbOlNuweZuHSDUGu5YvtxdAxwW0L6mDVftdh4+AOsNnJzU/UH0H3gtGUDcjq4KHBx0h2svUoJulWcT+Lg85Q7it1zpy6skpKd8M153H58wULnsyupZz44oMd2wp7HpiYG+uG6K1dk9LtO+e4Ge5TnlK/FdzC6I3bZJh59UMqsy+T1mZfYu9VFQzoEa1D4cMMPXeS/JAZy24l9PYgxq3o3Vy8hWyFd3LXb2jghzoMKz3R929K7ilxgKtP5O4j5pgEEy2cogYl3oNfF0rQANaR1eqeP4X/MQtXSdqGLxgKtxi+9ptiBCqXtcJvaw3Nt/pDk9
+    ssh-rsa <omitindo chave> 
 
 <img src="imagens/desafio3.5.png" alt="user data"/>
 
@@ -79,7 +79,7 @@ Após baixá-la, extrai a chave publica da mesma e desliguei a instância para q
     users:
     - name: ec2-user
         ssh-authorized-keys: 
-        - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCQGDdEtLzghrHBJSDJYdxbOlNuweZuHSDUGu5YvtxdAxwW0L6mDVftdh4+AOsNnJzU/UH0H3gtGUDcjq4KHBx0h2svUoJulWcT+Lg85Q7it1zpy6skpKd8M153H58wULnsyupZz44oMd2wp7HpiYG+uG6K1dk9LtO+e4Ge5TnlK/FdzC6I3bZJh59UMqsy+T1mZfYu9VFQzoEa1D4cMMPXeS/JAZy24l9PYgxq3o3Vy8hWyFd3LXb2jghzoMKz3R929K7ilxgKtP5O4j5pgEEy2cogYl3oNfF0rQANaR1eqeP4X/MQtXSdqGLxgKtxi+9ptiBCqXtcJvaw3Nt/pDk9
+        - ssh-rsa <omitindo chave>
 
 Assim, foi possível acessar a instância via cliente ssh:
 
