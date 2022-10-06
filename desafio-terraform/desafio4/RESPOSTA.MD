@@ -15,7 +15,9 @@ O comando base consiste em:
 
 - **Dependências**
 
-Subentende-se que o recurso **example** do tipo **aws_instance** já está criado e a EC2 na AWS também, cujo ID será substituido em **i-abcd1234**. O recurso **example** deverá ser criado em um módulo, seguindo a estrutura abaixo. É importante ressaltar que, caso o recurso esteja vinculado a outros recursos (complex import), será necessário criar outros blocos de resource para cada recurso relacionado e as informações poderiam ser adquiridas através do comando: `terraform state pull > arquivo.tfstate`
+Subentende-se que o recurso **example** do tipo **aws_instance** já está criado e a EC2 na AWS também, cujo ID será substituido em **i-abcd1234**. O recurso **example** deverá ser criado em um módulo, seguindo a estrutura abaixo. 
+
+OBS: É importante ressaltar que, caso o recurso esteja vinculado a outros recursos (*complex import*), será necessário criar outros blocos de *resource* para cada recurso relacionado e as informações poderiam ser adquiridas através do comando: `terraform state pull > arquivo.tfstate`
 
     resource "aws_instance" "example" {
         # Dados coletados na AWS
