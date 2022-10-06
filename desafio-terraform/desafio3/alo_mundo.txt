@@ -1,0 +1,8 @@
+```
+Alo Mundo!
+
+Meu nome é Wesley Silva e estou participando do Desafio Terraform da Getup/LinuxTips.
+
+Hoje é dia 06/10/2022 e os números de 1 a 100 divisíveis por 5 são: [0,5,10,15,20,25,30,35,40,45,50,55,60,65,70,75,80,85,90,95]
+
+```

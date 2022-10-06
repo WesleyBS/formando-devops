@@ -1,0 +1,387 @@
+formando-devops/desafio-terraform/desafio 1 on  main [✘!?] via 💠 default on ☁️  (us-east-1) 
+❯ sudo terraform init           
+
+Initializing the backend...
+
+Initializing provider plugins...
+- Reusing previous version of kyma-incubator/kind from the dependency lock file
+- Using previously-installed kyma-incubator/kind v0.0.11
+
+Terraform has been successfully initialized!
+
+You may now begin working with Terraform. Try running "terraform plan" to see
+any changes that are required for your infrastructure. All Terraform commands
+should now work.
+
+If you ever set or change modules or backend configuration for Terraform,
+rerun this command to reinitialize your working directory. If you forget, other
+commands will detect it and remind you to do so if necessary.
+
+formando-devops/desafio-terraform/desafio 1 on  main [✘!?] via 💠 default on ☁️  (us-east-1) 
+❯ sudo terraform plan -out plano
+
+Terraform used the selected providers to generate the following execution plan. Resource actions are indicated with the
+following symbols:
+  + create
+
+Terraform will perform the following actions:
+
+  # kind_cluster.DesafioTerraform will be created
+  + resource "kind_cluster" "DesafioTerraform" {
+      + client_certificate     = (known after apply)
+      + client_key             = (known after apply)
+      + cluster_ca_certificate = (known after apply)
+      + endpoint               = (known after apply)
+      + id                     = (known after apply)
+      + kubeconfig             = (known after apply)
+      + kubeconfig_path        = (known after apply)
+      + name                   = "desafio-terraform-wesley3"
+      + node_image             = "kindest/node:v1.18.4"
+      + wait_for_ready         = true
+
+      + kind_config {
+          + api_version = "kind.x-k8s.io/v1alpha4"
+          + kind        = "Cluster"
+
+          + node {
+              + role = "control-plane"
+            }
+          + node {
+              + kubeadm_config_patches = [
+                  + <<-EOT
+                        kind: JoinConfiguration
+                        nodeRegistration:
+                          kubeletExtraArgs:
+                            node-labels: "role=app"
+                    EOT,
+                ]
+              + role                   = "worker"
+            }
+          + node {
+              + kubeadm_config_patches = [
+                  + <<-EOT
+                        kind: JoinConfiguration
+                        nodeRegistration:
+                          kubeletExtraArgs:
+                            node-labels: "role=infra"
+                    EOT,
+                ]
+              + role                   = "worker"
+            }
+        }
+    }
+
+Plan: 1 to add, 0 to change, 0 to destroy.
+
+Changes to Outputs:
+  + api_endpoint           = (known after apply)
+  + client_certificate     = (known after apply)
+  + client_key             = (known after apply)
+  + cluster_ca_certificate = (known after apply)
+  + kubeconfig             = (known after apply)
+
+─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+Saved the plan to: plano
+
+To perform exactly these actions, run the following command to apply:
+    terraform apply "plano"
+
+formando-devops/desafio-terraform/desafio 1 on  main [✘!?] via 💠 default on ☁️  (us-east-1) 
+❯ sudo terraform apply plano    
+kind_cluster.DesafioTerraform: Creating...
+kind_cluster.DesafioTerraform: Still creating... [10s elapsed]
+kind_cluster.DesafioTerraform: Still creating... [20s elapsed]
+kind_cluster.DesafioTerraform: Still creating... [30s elapsed]
+kind_cluster.DesafioTerraform: Still creating... [40s elapsed]
+kind_cluster.DesafioTerraform: Still creating... [50s elapsed]
+kind_cluster.DesafioTerraform: Still creating... [1m0s elapsed]
+kind_cluster.DesafioTerraform: Still creating... [1m10s elapsed]
+kind_cluster.DesafioTerraform: Still creating... [1m20s elapsed]
+kind_cluster.DesafioTerraform: Still creating... [1m30s elapsed]
+kind_cluster.DesafioTerraform: Still creating... [1m40s elapsed]
+kind_cluster.DesafioTerraform: Still creating... [1m50s elapsed]
+kind_cluster.DesafioTerraform: Still creating... [2m0s elapsed]
+kind_cluster.DesafioTerraform: Still creating... [2m10s elapsed]
+kind_cluster.DesafioTerraform: Still creating... [2m20s elapsed]
+kind_cluster.DesafioTerraform: Still creating... [2m30s elapsed]
+kind_cluster.DesafioTerraform: Still creating... [2m40s elapsed]
+kind_cluster.DesafioTerraform: Still creating... [2m50s elapsed]
+kind_cluster.DesafioTerraform: Still creating... [3m0s elapsed]
+kind_cluster.DesafioTerraform: Still creating... [3m10s elapsed]
+kind_cluster.DesafioTerraform: Still creating... [3m20s elapsed]
+kind_cluster.DesafioTerraform: Still creating... [3m30s elapsed]
+kind_cluster.DesafioTerraform: Still creating... [3m40s elapsed]
+kind_cluster.DesafioTerraform: Provisioning with 'local-exec'...
+kind_cluster.DesafioTerraform (local-exec): Executing: ["/bin/sh" "-c" "kubectl taint node desafio-terraform-wesley3-worker -l role=infra dedicated=infra:NoSchedule"]
+kind_cluster.DesafioTerraform (local-exec): node/desafio-terraform-wesley3-worker2 tainted
+kind_cluster.DesafioTerraform: Creation complete after 3m43s [id=desafio-terraform-wesley3-kindest/node:v1.18.4]
+
+Apply complete! Resources: 1 added, 0 changed, 0 destroyed.
+
+Outputs:
+
+api_endpoint = "https://127.0.0.1:36495"
+client_certificate = <<EOT
+-----BEGIN CERTIFICATE-----
+MIIC8jCCAdqgAwIBAgIIcwUijdmPGvgwDQYJKoZIhvcNAQELBQAwFTETMBEGA1UE
+AxMKa3ViZXJuZXRlczAeFw0yMjEwMDYwMDM4MTdaFw0yMzEwMDYwMDM4MjFaMDQx
+FzAVBgNVBAoTDnN5c3RlbTptYXN0ZXJzMRkwFwYDVQQDExBrdWJlcm5ldGVzLWFk
+bWluMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAtqo/jSSa+3Sjpv0f
+QmK4JCbu1Zn2kNvN73i7Jy6BO8Vy3vxtxmq+EPJNfjvxLXpkDT4Qo4MyA47CgO3R
+eAhHBVOBGCkI9nzzjwwzzHoePNrziBOVxnhCBQuVebyILiTEcDR08XgDlIIGDBAc
+2F5EBO3iUKsc30VCdIbIiQe3NLFX+hIpaWUijGjonk+w6IQjALuIn1LgZy754BBb
+1kTY3CnZCHDdhThyr2+6Ovgj9Z95fUvZ6LIYDPUgQ7XeTiW27P27VK26434EQWYM
+p/aBBUVnUiRi84PB45Dl914AbReOEpxqIKUFpGljm319K2SynNS/3RSvSCaqlrPU
+dNbaAQIDAQABoycwJTAOBgNVHQ8BAf8EBAMCBaAwEwYDVR0lBAwwCgYIKwYBBQUH
+AwIwDQYJKoZIhvcNAQELBQADggEBAAwZFD9slkVps+ouZTZTgoGoReSl9CG75bGl
+aqBEKchaGfShpOwO/lk0JmKNQUTKIcm4CN5V04ioyFJ2v8Bn9EEFRI1DuGA9Z67J
+mg4yszpfka/BcGGk7ccJMbbbjM0r7IZZ/n6Bh+84Ckqgu2O6wUq/NtsEdtFBVwrF
+WPMUhsgK/Rm2weqglfIwL8WcisVOWMUI5IPWVHrPh6qip4YNgAY2/ELh3n4P7H5A
+wUR2CNDdYzeR1VKkxmf389wEafJZxGPlLwuBI+V/bERdiIzRQes9xp0hGfrxJQwG
+O6AUfXjV7LQbRsvVFP4cvqQoM9atPhAkCUC8KHnw6fZTZy7NRLM=
+-----END CERTIFICATE-----
+
+EOT
+client_key = <<EOT
+-----BEGIN RSA PRIVATE KEY-----
+MIIEowIBAAKCAQEAtqo/jSSa+3Sjpv0fQmK4JCbu1Zn2kNvN73i7Jy6BO8Vy3vxt
+xmq+EPJNfjvxLXpkDT4Qo4MyA47CgO3ReAhHBVOBGCkI9nzzjwwzzHoePNrziBOV
+xnhCBQuVebyILiTEcDR08XgDlIIGDBAc2F5EBO3iUKsc30VCdIbIiQe3NLFX+hIp
+aWUijGjonk+w6IQjALuIn1LgZy754BBb1kTY3CnZCHDdhThyr2+6Ovgj9Z95fUvZ
+6LIYDPUgQ7XeTiW27P27VK26434EQWYMp/aBBUVnUiRi84PB45Dl914AbReOEpxq
+IKUFpGljm319K2SynNS/3RSvSCaqlrPUdNbaAQIDAQABAoIBAFhqa7x73XCdcqFf
+oAPYGN2W4sANeCWB31psi9pZTkCKQCHi+ZezDzDQt+XESecDeO5X/mHHHSxPq6IQ
+evWovAe99ZymMCpvLM0u0NvGuGAocvyIzlR03S/n/YAhW6FKNrNBEOHYf5MgpKCu
+I+gvKKliI8t8J8uCkLoqi2KYk3szEpLeJdnhqYAQEdvyvgY5S5GFPJg/uQ/HpfEy
+hMgLOOIfZTm9Ad+8ZPLGsYmJ/D1pjDJOb0f8clnioFmMXRgWVG22mtDYZrYN3prj
+hKZwTOTH9fbB3C5LpJT2QXvEFvVxUZ7dbLktkHXt0JSjMzAKr1aAqjUu5+lZvBaG
+xncZwuECgYEA4zvB8/HW6Oppgjnh5XzixwiBdfL5Ue+qpnSRZPguYqYCn2t0rKbP
+v9KT8bCila6UnGpzwxJDXmljoH7IQwXQeMdVQGqR3q5iDw/BjDHnM/dsUctJlvbd
+iP+I8A3kv330QeB2KwnGwLBCfXzj82yxx6DRl+w7lsxlrJErQvgMvh0CgYEAzcob
+Ik7vP7xsM6nX1ghsAFnmpKppEqSjo98/+B82p22oPTQOQULhMi73ejnlLFfxZcAK
+KNSgg9dGEu8xkV5q3dJqKJJP9uIxNYnx2XVsMX53sCDNLtxSZiSeE8FN2MTZKDOk
+WnEvw6RzBzgvC9t6WfibUfzAIk+MddxSDgbBFjUCgYAEyOlYnasM1ILMPzPGhU6x
+KjivpyIg248YWjQFkERJx30epkCashiFzYVX/YQu6rIuaP9vCB9rCYUTiBfncWPm
+ZywgYx4XNkzSTF6i+RoJOhiJ0GIIT8JydA8KHwDGF3zhNjzGwznwLMX5pnuWUJ+d
+uIExVcQbdMpfS99BVb/O8QKBgD90Qkmh7UPJ5dNIW7Uzg5nYHrZHlX6aJZsyC5eG
+iGO3/Fhi5MJazPWcZdLaZz/1Hgox3PAaICSHDKRp/O7GHk2nw/QeqWmG9YV8s4ZK
+HsJkLKOyeZIpfX7ha5zLziU5DXzH77WzkPbSjmV7fYY6ds+nSL1PIi9yN+1fsi2B
+B6jBAoGBAOFHhDQfzbav/QAjHiLjeDtmKl01/lhXwna9/9UZIF53GpMZ0Ggte271
+1udHnZW5gCdWvseetHxl0T5mSZwtpFpM5uTF2m9zrJ0kF7xXaK5qmTeOnIkQxLi4
+5st9PlBHSWEr71+yEz7sn1kcULIYNN2KuP8D03Y2fhyCR/Miv4CI
+-----END RSA PRIVATE KEY-----
+
+EOT
+cluster_ca_certificate = <<EOT
+-----BEGIN CERTIFICATE-----
+MIICyDCCAbCgAwIBAgIBADANBgkqhkiG9w0BAQsFADAVMRMwEQYDVQQDEwprdWJl
+cm5ldGVzMB4XDTIyMTAwNjAwMzgxN1oXDTMyMTAwMzAwMzgxN1owFTETMBEGA1UE
+AxMKa3ViZXJuZXRlczCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBALVr
+AknX9fFgr96kSEwFCF5Pj7LzJfT4GnjpJ32fXicjDqPgV/HiyLLRAi+du9/yM7AZ
+jzJSFE5B0C/eDclgEHG3q+LCFwcyknoCQoJKmkor+dcJGjjiOoqDwxeioR06zEtq
+ffh//+wYrtbzSr3E3Uogb79LQ7w6bFEHiYssgvdr+/i3ndXrJ+PI/mNie/BVM75K
+nu+h05gLg36xqYTwXfkQfPf7J1SDIO/migaFrj2xx5W56osIWj7vwmS0JzEd8Ls7
+802VE2EkdvJzMV3Nq0IgiATB1YXPNfc7vY7KhLzIbgjrPkp691ozSqskq8IsbhsW
+1qCZkFgSffGPHZ4rWaECAwEAAaMjMCEwDgYDVR0PAQH/BAQDAgKkMA8GA1UdEwEB
+/wQFMAMBAf8wDQYJKoZIhvcNAQELBQADggEBAJ9geHnzjdg7u8vie2NmSfqNANtw
+XPOfW8q3CrqlV19EjZREPbwVhF3p/qP32oJY/5BhKdKnmpXmHntWOhHEjNvS0eag
+i8RHGBpK3nX0r52Y0N4mWDJOLbHBn9fNrIEGtLcmhctHYXKEUb2nmzjyCnaSH1uR
+FP2VF3E4Wry9e2F4tKKkJ1HoUvvoHgSCrrHyxiOcJyac+Mr/bd9HVAO9SHH5SW8p
+oLx3zfisGClJ+yDkcgJFMyyt+jJOqyg/RmNElSBdme72Zh38y89e2Vu+asCUBewy
+gOcyZQ9rPO4lDhQi1+kHfNexdDE0PqGmLRto9ATMimbQIxwPfvohclfEZ8g=
+-----END CERTIFICATE-----
+
+EOT
+kubeconfig = <<EOT
+apiVersion: v1
+clusters:
+- cluster:
+    certificate-authority-data: LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSUN5RENDQWJDZ0F3SUJBZ0lCQURBTkJna3Foa2lHOXcwQkFRc0ZBREFWTVJNd0VRWURWUVFERXdwcmRXSmwKY201bGRHVnpNQjRYRFRJeU1UQXdOakF3TXpneE4xb1hEVE15TVRBd016QXdNemd4TjFvd0ZURVRNQkVHQTFVRQpBeE1LYTNWaVpYSnVaWFJsY3pDQ0FTSXdEUVlKS29aSWh2Y05BUUVCQlFBRGdnRVBBRENDQVFvQ2dnRUJBTFZyCkFrblg5ZkZncjk2a1NFd0ZDRjVQajdMekpmVDRHbmpwSjMyZlhpY2pEcVBnVi9IaXlMTFJBaStkdTkveU03QVoKanpKU0ZFNUIwQy9lRGNsZ0VIRzNxK0xDRndjeWtub0NRb0pLbWtvcitkY0pHamppT29xRHd4ZWlvUjA2ekV0cQpmZmgvLyt3WXJ0YnpTcjNFM1VvZ2I3OUxRN3c2YkZFSGlZc3NndmRyKy9pM25kWHJKK1BJL21OaWUvQlZNNzVLCm51K2gwNWdMZzM2eHFZVHdYZmtRZlBmN0oxU0RJTy9taWdhRnJqMnh4NVc1Nm9zSVdqN3Z3bVMwSnpFZDhMczcKODAyVkUyRWtkdkp6TVYzTnEwSWdpQVRCMVlYUE5mYzd2WTdLaEx6SWJnanJQa3A2OTFvelNxc2txOElzYmhzVwoxcUNaa0ZnU2ZmR1BIWjRyV2FFQ0F3RUFBYU1qTUNFd0RnWURWUjBQQVFIL0JBUURBZ0trTUE4R0ExVWRFd0VCCi93UUZNQU1CQWY4d0RRWUpLb1pJaHZjTkFRRUxCUUFEZ2dFQkFKOWdlSG56amRnN3U4dmllMk5tU2ZxTkFOdHcKWFBPZlc4cTNDcnFsVjE5RWpaUkVQYndWaEYzcC9xUDMyb0pZLzVCaEtkS25tcFhtSG50V09oSEVqTnZTMGVhZwppOFJIR0JwSzNuWDByNTJZME40bVdESk9MYkhCbjlmTnJJRUd0TGNtaGN0SFlYS0VVYjJubXpqeUNuYVNIMXVSCkZQMlZGM0U0V3J5OWUyRjR0S0trSjFIb1V2dm9IZ1NDcnJIeXhpT2NKeWFjK01yL2JkOUhWQU85U0hINVNXOHAKb0x4M3pmaXNHQ2xKK3lEa2NnSkZNeXl0K2pKT3F5Zy9SbU5FbFNCZG1lNzJaaDM4eTg5ZTJWdSthc0NVQmV3eQpnT2N5WlE5clBPNGxEaFFpMStrSGZOZXhkREUwUHFHbUxSdG85QVRNaW1iUUl4d1Bmdm9oY2xmRVo4Zz0KLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=
+    server: https://127.0.0.1:36495
+  name: kind-desafio-terraform-wesley3
+contexts:
+- context:
+    cluster: kind-desafio-terraform-wesley3
+    user: kind-desafio-terraform-wesley3
+  name: kind-desafio-terraform-wesley3
+current-context: kind-desafio-terraform-wesley3
+kind: Config
+preferences: {}
+users:
+- name: kind-desafio-terraform-wesley3
+  user:
+    client-certificate-data: LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSUM4akNDQWRxZ0F3SUJBZ0lJY3dVaWpkbVBHdmd3RFFZSktvWklodmNOQVFFTEJRQXdGVEVUTUJFR0ExVUUKQXhNS2EzVmlaWEp1WlhSbGN6QWVGdzB5TWpFd01EWXdNRE00TVRkYUZ3MHlNekV3TURZd01ETTRNakZhTURReApGekFWQmdOVkJBb1REbk41YzNSbGJUcHRZWE4wWlhKek1Sa3dGd1lEVlFRREV4QnJkV0psY201bGRHVnpMV0ZrCmJXbHVNSUlCSWpBTkJna3Foa2lHOXcwQkFRRUZBQU9DQVE4QU1JSUJDZ0tDQVFFQXRxby9qU1NhKzNTanB2MGYKUW1LNEpDYnUxWm4ya052TjczaTdKeTZCTzhWeTN2eHR4bXErRVBKTmZqdnhMWHBrRFQ0UW80TXlBNDdDZ08zUgplQWhIQlZPQkdDa0k5bnp6and3enpIb2VQTnJ6aUJPVnhuaENCUXVWZWJ5SUxpVEVjRFIwOFhnRGxJSUdEQkFjCjJGNUVCTzNpVUtzYzMwVkNkSWJJaVFlM05MRlgraElwYVdVaWpHam9uayt3NklRakFMdUluMUxnWnk3NTRCQmIKMWtUWTNDblpDSERkaFRoeXIyKzZPdmdqOVo5NWZVdlo2TElZRFBVZ1E3WGVUaVcyN1AyN1ZLMjY0MzRFUVdZTQpwL2FCQlVWblVpUmk4NFBCNDVEbDkxNEFiUmVPRXB4cUlLVUZwR2xqbTMxOUsyU3luTlMvM1JTdlNDYXFsclBVCmROYmFBUUlEQVFBQm95Y3dKVEFPQmdOVkhROEJBZjhFQkFNQ0JhQXdFd1lEVlIwbEJBd3dDZ1lJS3dZQkJRVUgKQXdJd0RRWUpLb1pJaHZjTkFRRUxCUUFEZ2dFQkFBd1pGRDlzbGtWcHMrb3VaVFpUZ29Hb1JlU2w5Q0c3NWJHbAphcUJFS2NoYUdmU2hwT3dPL2xrMEptS05RVVRLSWNtNENONVYwNGlveUZKMnY4Qm45RUVGUkkxRHVHQTlaNjdKCm1nNHlzenBma2EvQmNHR2s3Y2NKTWJiYmpNMHI3SVpaL242QmgrODRDa3FndTJPNndVcS9OdHNFZHRGQlZ3ckYKV1BNVWhzZ0svUm0yd2VxZ2xmSXdMOFdjaXNWT1dNVUk1SVBXVkhyUGg2cWlwNFlOZ0FZMi9FTGgzbjRQN0g1QQp3VVIyQ05EZFl6ZVIxVktreG1mMzg5d0VhZkpaeEdQbEx3dUJJK1YvYkVSZGlJelJRZXM5eHAwaEdmcnhKUXdHCk82QVVmWGpWN0xRYlJzdlZGUDRjdnFRb005YXRQaEFrQ1VDOEtIbnc2ZlpUWnk3TlJMTT0KLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=
+    client-key-data: LS0tLS1CRUdJTiBSU0EgUFJJVkFURSBLRVktLS0tLQpNSUlFb3dJQkFBS0NBUUVBdHFvL2pTU2ErM1NqcHYwZlFtSzRKQ2J1MVpuMmtOdk43M2k3Snk2Qk84Vnkzdnh0CnhtcStFUEpOZmp2eExYcGtEVDRRbzRNeUE0N0NnTzNSZUFoSEJWT0JHQ2tJOW56emp3d3p6SG9lUE5yemlCT1YKeG5oQ0JRdVZlYnlJTGlURWNEUjA4WGdEbElJR0RCQWMyRjVFQk8zaVVLc2MzMFZDZEliSWlRZTNOTEZYK2hJcAphV1Vpakdqb25rK3c2SVFqQUx1SW4xTGdaeTc1NEJCYjFrVFkzQ25aQ0hEZGhUaHlyMis2T3ZnajlaOTVmVXZaCjZMSVlEUFVnUTdYZVRpVzI3UDI3VksyNjQzNEVRV1lNcC9hQkJVVm5VaVJpODRQQjQ1RGw5MTRBYlJlT0VweHEKSUtVRnBHbGptMzE5SzJTeW5OUy8zUlN2U0NhcWxyUFVkTmJhQVFJREFRQUJBb0lCQUZocWE3eDczWENkY3FGZgpvQVBZR04yVzRzQU5lQ1dCMzFwc2k5cFpUa0NLUUNIaStaZXpEekRRdCtYRVNlY0RlTzVYL21ISEhTeFBxNklRCmV2V292QWU5OVp5bU1DcHZMTTB1ME52R3VHQW9jdnlJemxSMDNTL24vWUFoVzZGS05yTkJFT0hZZjVNZ3BLQ3UKSStndktLbGlJOHQ4Sjh1Q2tMb3FpMktZazNzekVwTGVKZG5ocVlBUUVkdnl2Z1k1UzVHRlBKZy91US9IcGZFeQpoTWdMT09JZlpUbTlBZCs4WlBMR3NZbUovRDFwakRKT2IwZjhjbG5pb0ZtTVhSZ1dWRzIybXREWVpyWU4zcHJqCmhLWndUT1RIOWZiQjNDNUxwSlQyUVh2RUZ2VnhVWjdkYkxrdGtIWHQwSlNqTXpBS3IxYUFxalV1NStsWnZCYUcKeG5jWnd1RUNnWUVBNHp2QjgvSFc2T3BwZ2puaDVYeml4d2lCZGZMNVVlK3FwblNSWlBndVlxWUNuMnQwcktiUAp2OUtUOGJDaWxhNlVuR3B6d3hKRFhtbGpvSDdJUXdYUWVNZFZRR3FSM3E1aUR3L0JqREhuTS9kc1VjdEpsdmJkCmlQK0k4QTNrdjMzMFFlQjJLd25Hd0xCQ2ZYemo4Mnl4eDZEUmwrdzdsc3hsckpFclF2Z012aDBDZ1lFQXpjb2IKSWs3dlA3eHNNNm5YMWdoc0FGbm1wS3BwRXFTam85OC8rQjgycDIyb1BUUU9RVUxoTWk3M2VqbmxMRmZ4WmNBSwpLTlNnZzlkR0V1OHhrVjVxM2RKcUtKSlA5dUl4TllueDJYVnNNWDUzc0NETkx0eFNaaVNlRThGTjJNVFpLRE9rClduRXZ3NlJ6QnpndkM5dDZXZmliVWZ6QUlrK01kZHhTRGdiQkZqVUNnWUFFeU9sWW5hc00xSUxNUHpQR2hVNngKS2ppdnB5SWcyNDhZV2pRRmtFUkp4MzBlcGtDYXNoaUZ6WVZYL1lRdTZySXVhUDl2Q0I5ckNZVVRpQmZuY1dQbQpaeXdnWXg0WE5relNURjZpK1JvSk9oaUowR0lJVDhKeWRBOEtId0RHRjN6aE5qekd3em53TE1YNXBudVdVSitkCnVJRXhWY1FiZE1wZlM5OUJWYi9POFFLQmdEOTBRa21oN1VQSjVkTklXN1V6ZzVuWUhyWkhsWDZhSlpzeUM1ZUcKaUdPMy9GaGk1TUphelBXY1pkTGFaei8xSGdveDNQQWFJQ1NIREtScC9PN0dIazJudy9RZXFXbUc5WVY4czRaSwpIc0prTEtPeWVaSXBmWDdoYTV6THppVTVEWHpINzdXemtQYlNqbVY3ZllZNmRzK25TTDFQSWk5eU4rMWZzaTJCCkI2akJBb0dCQU9GSGhEUWZ6YmF2L1FBakhpTGplRHRtS2wwMS9saFh3bmE5LzlVWklGNTNHcE1aMEdndGUyNzEKMXVkSG5aVzVnQ2RXdnNlZXRIeGwwVDVtU1p3dHBGcE01dVRGMm05enJKMGtGN3hYYUs1cW1UZU9uSWtReExpNAo1c3Q5UGxCSFNXRXI3MSt5RXo3c24xa2NVTElZTk4yS3VQOEQwM1kyZmh5Q1IvTWl2NENJCi0tLS0tRU5EIFJTQSBQUklWQVRFIEtFWS0tLS0tCg==
+
+EOT
+
+formando-devops/desafio-terraform/desafio 1 on  main [✘!?] via 💠 default on ☁️  (us-east-1) took 3m43s 
+❯ docker ps
+CONTAINER ID   IMAGE                  COMMAND                  CREATED         STATUS         PORTS                       NAMES
+1151310671c5   kindest/node:v1.18.4   "/usr/local/bin/entr…"   4 minutes ago   Up 3 minutes                               desafio-terraform-wesley3-worker2
+4539bfdf0907   kindest/node:v1.18.4   "/usr/local/bin/entr…"   4 minutes ago   Up 3 minutes                               desafio-terraform-wesley3-worker
+4de93004fa5e   kindest/node:v1.18.4   "/usr/local/bin/entr…"   4 minutes ago   Up 3 minutes   127.0.0.1:36495->6443/tcp   desafio-terraform-wesley3-control-plane
+
+formando-devops/desafio-terraform/desafio 1 on  main [✘!?] via 💠 default on ☁️  (us-east-1) 
+❯ sudo docker exec -ti desafio-terraform-wesley3-control-plane /bin/bash
+root@desafio-terraform-wesley3-control-plane:/# kubectl get nodes
+NAME                                      STATUS   ROLES    AGE     VERSION
+desafio-terraform-wesley3-control-plane   Ready    master   3m4s    v1.18.4
+desafio-terraform-wesley3-worker          Ready    <none>   2m19s   v1.18.4
+desafio-terraform-wesley3-worker2         Ready    <none>   2m18s   v1.18.4
+root@desafio-terraform-wesley3-control-plane:/# kubectl describe node -l role=app
+Name:               desafio-terraform-wesley3-worker
+Roles:              <none>
+Labels:             beta.kubernetes.io/arch=amd64
+                    beta.kubernetes.io/os=linux
+                    kubernetes.io/arch=amd64
+                    kubernetes.io/hostname=desafio-terraform-wesley3-worker
+                    kubernetes.io/os=linux
+                    role=app
+Annotations:        kubeadm.alpha.kubernetes.io/cri-socket: unix:///run/containerd/containerd.sock
+                    node.alpha.kubernetes.io/ttl: 0
+                    volumes.kubernetes.io/controller-managed-attach-detach: true
+CreationTimestamp:  Thu, 06 Oct 2022 00:39:43 +0000
+Taints:             <none>
+Unschedulable:      false
+Lease:
+  HolderIdentity:  desafio-terraform-wesley3-worker
+  AcquireTime:     <unset>
+  RenewTime:       Thu, 06 Oct 2022 00:42:20 +0000
+Conditions:
+  Type             Status  LastHeartbeatTime                 LastTransitionTime                Reason                       Message
+  ----             ------  -----------------                 ------------------                ------                       -------
+  MemoryPressure   False   Thu, 06 Oct 2022 00:41:27 +0000   Thu, 06 Oct 2022 00:39:43 +0000   KubeletHasSufficientMemory   kubelet has sufficient memory available
+  DiskPressure     False   Thu, 06 Oct 2022 00:41:27 +0000   Thu, 06 Oct 2022 00:39:43 +0000   KubeletHasNoDiskPressure     kubelet has no disk pressure
+  PIDPressure      False   Thu, 06 Oct 2022 00:41:27 +0000   Thu, 06 Oct 2022 00:39:43 +0000   KubeletHasSufficientPID      kubelet has sufficient PID available
+  Ready            True    Thu, 06 Oct 2022 00:41:27 +0000   Thu, 06 Oct 2022 00:41:27 +0000   KubeletReady                 kubelet is posting ready status
+Addresses:
+  InternalIP:  172.18.0.2
+  Hostname:    desafio-terraform-wesley3-worker
+Capacity:
+  cpu:                8
+  ephemeral-storage:  306098136Ki
+  hugepages-2Mi:      0
+  memory:             8098440Ki
+  pods:               110
+Allocatable:
+  cpu:                8
+  ephemeral-storage:  306098136Ki
+  hugepages-2Mi:      0
+  memory:             8098440Ki
+  pods:               110
+System Info:
+  Machine ID:                 6a00ee9eb9f5462db1976914d98af8c4
+  System UUID:                5ed0c9ee-fd3c-40ab-a78a-db89686120c4
+  Boot ID:                    8ea95b01-b44d-477a-b45a-52010b1b588c
+  Kernel Version:             5.4.0-74-generic
+  OS Image:                   Ubuntu 20.04 LTS
+  Operating System:           linux
+  Architecture:               amd64
+  Container Runtime Version:  containerd://1.4.0-beta.1-34-g49b0743c
+  Kubelet Version:            v1.18.4
+  Kube-Proxy Version:         v1.18.4
+PodCIDR:                      10.244.1.0/24
+PodCIDRs:                     10.244.1.0/24
+ProviderID:                   kind://docker/desafio-terraform-wesley3/desafio-terraform-wesley3-worker
+Non-terminated Pods:          (2 in total)
+  Namespace                   Name                CPU Requests  CPU Limits  Memory Requests  Memory Limits  AGE
+  ---------                   ----                ------------  ----------  ---------------  -------------  ---
+  kube-system                 kindnet-9srk4       100m (1%)     100m (1%)   50Mi (0%)        50Mi (0%)      2m42s
+  kube-system                 kube-proxy-rpwrz    0 (0%)        0 (0%)      0 (0%)           0 (0%)         2m42s
+Allocated resources:
+  (Total limits may be over 100 percent, i.e., overcommitted.)
+  Resource           Requests   Limits
+  --------           --------   ------
+  cpu                100m (1%)  100m (1%)
+  memory             50Mi (0%)  50Mi (0%)
+  ephemeral-storage  0 (0%)     0 (0%)
+  hugepages-2Mi      0 (0%)     0 (0%)
+Events:
+  Type    Reason                   Age                    From                                          Message
+  ----    ------                   ----                   ----                                          -------
+  Normal  NodeHasSufficientMemory  2m44s (x6 over 2m47s)  kubelet, desafio-terraform-wesley3-worker     Node desafio-terraform-wesley3-worker status is now: NodeHasSufficientMemory
+  Normal  NodeHasNoDiskPressure    2m44s (x6 over 2m47s)  kubelet, desafio-terraform-wesley3-worker     Node desafio-terraform-wesley3-worker status is now: NodeHasNoDiskPressure
+  Normal  NodeHasSufficientPID     2m44s (x6 over 2m47s)  kubelet, desafio-terraform-wesley3-worker     Node desafio-terraform-wesley3-worker status is now: NodeHasSufficientPID
+  Normal  Starting                 95s                    kube-proxy, desafio-terraform-wesley3-worker  Starting kube-proxy.
+  Normal  NodeReady                60s                    kubelet, desafio-terraform-wesley3-worker     Node desafio-terraform-wesley3-worker status is now: NodeReady
+
+
+
+root@desafio-terraform-wesley3-control-plane:/# kubectl describe node -l role=infra
+Name:               desafio-terraform-wesley3-worker2
+Roles:              <none>
+Labels:             beta.kubernetes.io/arch=amd64
+                    beta.kubernetes.io/os=linux
+                    kubernetes.io/arch=amd64
+                    kubernetes.io/hostname=desafio-terraform-wesley3-worker2
+                    kubernetes.io/os=linux
+                    role=infra
+Annotations:        kubeadm.alpha.kubernetes.io/cri-socket: unix:///run/containerd/containerd.sock
+                    node.alpha.kubernetes.io/ttl: 0
+                    volumes.kubernetes.io/controller-managed-attach-detach: true
+CreationTimestamp:  Thu, 06 Oct 2022 00:39:44 +0000
+Taints:             dedicated=infra:NoSchedule
+Unschedulable:      false
+Lease:
+  HolderIdentity:  desafio-terraform-wesley3-worker2
+  AcquireTime:     <unset>
+  RenewTime:       Thu, 06 Oct 2022 00:42:39 +0000
+Conditions:
+  Type             Status  LastHeartbeatTime                 LastTransitionTime                Reason                       Message
+  ----             ------  -----------------                 ------------------                ------                       -------
+  MemoryPressure   False   Thu, 06 Oct 2022 00:41:27 +0000   Thu, 06 Oct 2022 00:39:43 +0000   KubeletHasSufficientMemory   kubelet has sufficient memory available
+  DiskPressure     False   Thu, 06 Oct 2022 00:41:27 +0000   Thu, 06 Oct 2022 00:39:43 +0000   KubeletHasNoDiskPressure     kubelet has no disk pressure
+  PIDPressure      False   Thu, 06 Oct 2022 00:41:27 +0000   Thu, 06 Oct 2022 00:39:43 +0000   KubeletHasSufficientPID      kubelet has sufficient PID available
+  Ready            True    Thu, 06 Oct 2022 00:41:27 +0000   Thu, 06 Oct 2022 00:41:27 +0000   KubeletReady                 kubelet is posting ready status
+Addresses:
+  InternalIP:  172.18.0.4
+  Hostname:    desafio-terraform-wesley3-worker2
+Capacity:
+  cpu:                8
+  ephemeral-storage:  306098136Ki
+  hugepages-2Mi:      0
+  memory:             8098440Ki
+  pods:               110
+Allocatable:
+  cpu:                8
+  ephemeral-storage:  306098136Ki
+  hugepages-2Mi:      0
+  memory:             8098440Ki
+  pods:               110
+System Info:
+  Machine ID:                 737a40f38ccb42d5888dc19425619265
+  System UUID:                3e9e5513-ba0a-4177-9702-b6c9d856e1f6
+  Boot ID:                    8ea95b01-b44d-477a-b45a-52010b1b588c
+  Kernel Version:             5.4.0-74-generic
+  OS Image:                   Ubuntu 20.04 LTS
+  Operating System:           linux
+  Architecture:               amd64
+  Container Runtime Version:  containerd://1.4.0-beta.1-34-g49b0743c
+  Kubelet Version:            v1.18.4
+  Kube-Proxy Version:         v1.18.4
+PodCIDR:                      10.244.2.0/24
+PodCIDRs:                     10.244.2.0/24
+ProviderID:                   kind://docker/desafio-terraform-wesley3/desafio-terraform-wesley3-worker2
+Non-terminated Pods:          (2 in total)
+  Namespace                   Name                CPU Requests  CPU Limits  Memory Requests  Memory Limits  AGE
+  ---------                   ----                ------------  ----------  ---------------  -------------  ---
+  kube-system                 kindnet-zh6wf       100m (1%)     100m (1%)   50Mi (0%)        50Mi (0%)      3m
+  kube-system                 kube-proxy-5dzx4    0 (0%)        0 (0%)      0 (0%)           0 (0%)         3m
+Allocated resources:
+  (Total limits may be over 100 percent, i.e., overcommitted.)
+  Resource           Requests   Limits
+  --------           --------   ------
+  cpu                100m (1%)  100m (1%)
+  memory             50Mi (0%)  50Mi (0%)
+  ephemeral-storage  0 (0%)     0 (0%)
+  hugepages-2Mi      0 (0%)     0 (0%)
+Events:
+  Type    Reason                   Age                  From                                           Message
+  ----    ------                   ----                 ----                                           -------
+  Normal  NodeHasSufficientMemory  3m3s (x6 over 3m6s)  kubelet, desafio-terraform-wesley3-worker2     Node desafio-terraform-wesley3-worker2 status is now: NodeHasSufficientMemory
+  Normal  NodeHasNoDiskPressure    3m3s (x6 over 3m6s)  kubelet, desafio-terraform-wesley3-worker2     Node desafio-terraform-wesley3-worker2 status is now: NodeHasNoDiskPressure
+  Normal  NodeHasSufficientPID     3m3s (x6 over 3m6s)  kubelet, desafio-terraform-wesley3-worker2     Node desafio-terraform-wesley3-worker2 status is now: NodeHasSufficientPID
+  Normal  Starting                 114s                 kube-proxy, desafio-terraform-wesley3-worker2  Starting kube-proxy.
+  Normal  NodeReady                79s                  kubelet, desafio-terraform-wesley3-worker2     Node desafio-terraform-wesley3-worker2 status is now: NodeReady

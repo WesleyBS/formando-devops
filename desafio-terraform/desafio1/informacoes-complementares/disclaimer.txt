@@ -1,0 +1,1 @@
+Devido a falta de tempo desta semana, não consegui implementar o metrics server
