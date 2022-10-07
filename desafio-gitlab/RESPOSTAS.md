@@ -64,3 +64,4 @@ Após adicionar a chave pública à minha conta, clonei o repositório para minh
 
 > 7. Crie um pipeline no GitLab CI para fazer o deploy do site estático no GitLab Pages.
 
+git push origin -u feature
