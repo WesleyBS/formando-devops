@@ -46,6 +46,17 @@ Após adicionar a chave pública à minha conta, clonei o repositório para minh
     ❯ git commit -m "Desafio Dev"
     [main 3780259] Desafio Dev
      1 file changed, 1 insertion(+), 1 deletion(-)
+    
+    ❯ git push
+    Enter passphrase for key '/home/wesley/.ssh/id_rsa': 
+    Enumerating objects: 5, done.
+    Counting objects: 100% (5/5), done.
+    Delta compression using up to 8 threads
+    Compressing objects: 100% (3/3), done.
+    Writing objects: 100% (3/3), 362 bytes | 362.00 KiB/s, done.
+    Total 3 (delta 1), reused 0 (delta 0)
+    To gitlab.com:WesleyBS/desafio-gitlab.git
+    3064333..7c00b1f  main -> main
 
 
 > 6. Crie uma nova branch chamada "feature" e altere o texto da página inicial para "Desafio GitLab - Feature".
@@ -62,6 +73,91 @@ Após adicionar a chave pública à minha conta, clonei o repositório para minh
     [feature 3794313] Desafio Feature
      1 file changed, 1 insertion(+), 1 deletion(-)
 
+    ❯ git push origin -u feature
+    Enter passphrase for key '/home/wesley/.ssh/id_rsa': 
+    Enumerating objects: 7, done.
+    Counting objects: 100% (7/7), done.
+    Delta compression using up to 8 threads
+    Compressing objects: 100% (4/4), done.
+    Writing objects: 100% (4/4), 380 bytes | 380.00 KiB/s, done.
+    Total 4 (delta 2), reused 0 (delta 0)
+    remote: 
+    remote: To create a merge request for feature, visit:
+    remote:   https://gitlab.com/WesleyBS/desafio-gitlab/-/merge_requests/new?merge_request%5Bsource_branch%5D=feature
+    remote: 
+    To gitlab.com:WesleyBS/desafio-gitlab.git
+    * [new branch]      feature -> feature
+    Branch 'feature' set up to track remote branch 'feature' from 'origin'.
+
 > 7. Crie um pipeline no GitLab CI para fazer o deploy do site estático no GitLab Pages.
 
-git push origin -u feature
+    touch .gitlab-ci.yml
+
+    cat << EOF >> .gitlab-ci.yml
+    pages:
+    stage: deploy
+    script:
+    - mkdir .public
+    - cp -r * .public
+    - mv .public public
+    artifacts:
+        paths:
+        - public
+    only:
+    - main
+    EOF
+
+    ❯ git add .gitlab-ci.yml
+
+    ❯ git commit -m "Subindo página estática com gitlab-ci" -a
+    [main 3064333] Subindo página estática com gitlab-ci
+    1 file changed, 11 insertions(+)
+    create mode 100644 .gitlab-ci.yml
+    
+    ❯ git push
+    Enter passphrase for key '/home/wesley/.ssh/id_rsa': 
+    Enumerating objects: 10, done.
+    Counting objects: 100% (10/10), done.
+    Delta compression using up to 8 threads
+    Compressing objects: 100% (8/8), done.
+    Writing objects: 100% (9/9), 1.05 KiB | 537.00 KiB/s, done.
+    Total 9 (delta 0), reused 0 (delta 0)
+    To gitlab.com:WesleyBS/desafio-gitlab.git
+    74943d0..3064333  main -> main
+
+<img src="imagens/desafio7.png" alt="Criando Projeto"/>
+
+
+> 8. Faça o merge da branch "feature" para a branch "main".
+
+    ❯ git checkout main              
+    Switched to branch 'main'
+    Your branch is up to date with 'origin/main'.
+
+    ❯ git merge feature
+    Updating 506013c..4092bf1
+    Fast-forward
+    public/index.html | 2 +-
+    1 file changed, 1 insertion(+), 1 deletion(-)
+
+    ❯ git push                  
+    Enter passphrase for key '/home/sefaz/.ssh/id_rsa': 
+    Total 0 (delta 0), reused 0 (delta 0)
+    To gitlab.com:WesleyBS/desafio-gitlab.git
+    506013c..4092bf1  main -> main
+
+> 9. Encontre o endereço do seu site no GitLab.
+
+<img src="imagens/desafio9.png" alt="Criando Projeto"/>
+
+<img src="imagens/desafio9.1.png" alt="Criando Projeto"/>
+
+> 10. Acesse a página inicial do seu projeto no Gitlab e verifique se o texto foi alterado.
+
+<img src="imagens/desafio10.png" alt="Criando Projeto"/>
+
+> 11. Adicione no arquivo [RESPOSTAS.md](RESPOSTAS.md) o link para o seu repositório e o log do git com o histórico de commits. Envie também um screenshot da Gitlab Page criada.
+
+https://gitlab.com/WesleyBS/desafio-gitlab
+
+https://wesleybs.gitlab.io/desafio-gitlab/
