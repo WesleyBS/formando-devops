@@ -1,0 +1,35 @@
+commit 4092bf1bb3b40e09040d2704bbc07d51f2c63a36
+Author: Wesley Silva <wesley.silva@sefaz.ma.gov.br>
+Date:   Fri Oct 7 23:32:18 2022 -0300
+
+    Desafio Feature
+
+commit 506013ce415c2c516d6f817547af3ac5f9112766
+Author: Wesley Silva <wesley.silva@sefaz.ma.gov.br>
+Date:   Fri Oct 7 23:24:37 2022 -0300
+
+    Inserindo o - Dev no corpo da mensagem
+
+commit 7c00b1f8bf6f7188c5ac7da0a7d0af27d142a83f
+Author: Wesley Silva <wesley.silva@sefaz.ma.gov.br>
+Date:   Fri Oct 7 23:15:55 2022 -0300
+
+    Adicionando only: main
+
+commit 30643330cfc209b37048ca03e03d8d01f58d75a4
+Author: Wesley Silva <wesley.silva@sefaz.ma.gov.br>
+Date:   Fri Oct 7 23:10:11 2022 -0300
+
+    Subindo página estática com gitlab-ci
+
+commit 443ec50402c5eb69071bc1329b0c24ad5d9f302c
+Author: Wesley Silva <wesley.silva@sefaz.ma.gov.br>
+Date:   Fri Oct 7 23:06:45 2022 -0300
+
+    Subindo página estática
+
+commit 74943d0f8a33ad13c271c2d687370b3b78a04709
+Author: WesleyBS <wesley_silva14@hotmail.com>
+Date:   Sat Oct 8 02:00:28 2022 +0000
+
+    Initial commit

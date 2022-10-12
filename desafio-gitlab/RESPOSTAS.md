@@ -65,7 +65,7 @@ Após adicionar a chave pública à minha conta, clonei o repositório para minh
     M       public/index.html
     Switched to a new branch 'feature'
 
-    ❯ sed -i "s/Gitlab<\/h1>/Gitlab - Feature<\/h1>/g" public/index.html
+    ❯ sed -i "s/Gitlab - Dev<\/h1>/Gitlab - Feature<\/h1>/g" public/index.html
 
     ❯ git add public/index.html
 
@@ -161,3 +161,7 @@ Após adicionar a chave pública à minha conta, clonei o repositório para minh
 https://gitlab.com/WesleyBS/desafio-gitlab
 
 https://wesleybs.gitlab.io/desafio-gitlab/
+
+    ❯ git log --all > gitlog.txt
+
+    ❯ cp gitlog.txt ../formando-devops/desafio-gitlab
