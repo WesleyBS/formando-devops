@@ -259,3 +259,134 @@ Are you sure you want to continue? [y/N]
 
 7. Como você faria para extrair os comandos Dockerfile de uma imagem?
 
+Haveria duas formas de chegar de forma aproximida a este resultado com as ferramentas presentes com o docker: 
+
+-  `docker image inspect <nome_da_imagem>`
+-  `docker history <nome_da_imagem>`
+
+E também outras formas não oficiais como o uso da imagem `alpine/dfimage`.
+
+Um exemplo da primeira maneira:
+
+```bash
+➜  ~ docker inspect --format='{{range $e := .Config.Env}}
+ENV {{$e}}
+{{end}}{{range $e,$v := .Config.ExposedPorts}}
+EXPOSE {{$e}}
+{{end}}{{range $e,$v := .Config.Volumes}}
+VOLUME {{$e}}
+{{end}}{{with .Config.User}}USER {{.}}{{end}}
+{{with .Config.WorkingDir}}WORKDIR {{.}}{{end}}
+{{with .Config.Entrypoint}}ENTRYPOINT {{json .}}{{end}}
+{{with .Config.Cmd}}CMD {{json .}}{{end}}
+{{with .Config.OnBuild}}ONBUILD {{json .}}{{end}}' python-docker
+
+ENV PATH=/usr/local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+
+ENV LANG=C.UTF-8
+
+ENV GPG_KEY=E3FF2839C048B25C084DEBE9B26995E310250568
+
+ENV PYTHON_VERSION=3.8.15
+
+ENV PYTHON_PIP_VERSION=22.0.4
+
+ENV PYTHON_SETUPTOOLS_VERSION=57.5.0
+
+ENV PYTHON_GET_PIP_URL=https://github.com/pypa/get-pip/raw/5eaac1050023df1f5c98b173b248c260023f2278/public/get-pip.py
+
+ENV PYTHON_GET_PIP_SHA256=5aefe6ade911d997af080b315ebcb7f882212d070465df544e1175ac2be519b4
+
+WORKDIR /app
+
+CMD ["python","./app.py"]
+```
+
+Um exemplo da segunda forma:
+
+```bash
+➜  ~ docker history --no-trunc python-docker  | tac | tr -s ' ' | cut -d " " -f 5- | sed 's,^/bin/sh -c #(nop) ,,g' | sed 's,^/bin/sh -c,RUN,g' | sed 's, && ,\n  & ,g' | sed 's,\s*[0-9]*[\.]*[0-9]*\s*[kMG]*B\s*$,,g' | head -n -1
+ADD file:706105a4a2ea63ba10911afb5998d321ff745f9bcedd2e2e8efcf33f5dad584b in /
+CMD ["bash"]
+ENV PATH=/usr/local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+ENV LANG=C.UTF-8
+RUN set -eux; apt-get update; apt-get install -y --no-install-recommends ca-certificates netbase tzdata ; rm -rf /var/lib/apt/lists/*
+ENV GPG_KEY=E3FF2839C048B25C084DEBE9B26995E310250568
+ENV PYTHON_VERSION=3.8.15
+RUN set -eux; savedAptMark="$(apt-mark showmanual)"; apt-get update; apt-get install -y --no-install-recommends dpkg-dev gcc gnupg dirmngr libbluetooth-dev libbz2-dev libc6-dev libexpat1-dev libffi-dev libgdbm-dev liblzma-dev libncursesw5-dev libreadline-dev libsqlite3-dev libssl-dev make tk-dev uuid-dev wget xz-utils zlib1g-dev ; wget -O python.tar.xz "https://www.python.org/ftp/python/${PYTHON_VERSION%%[a-z]*}/Python-$PYTHON_VERSION.tar.xz"; wget -O python.tar.xz.asc "https://www.python.org/ftp/python/${PYTHON_VERSION%%[a-z]*}/Python-$PYTHON_VERSION.tar.xz.asc"; GNUPGHOME="$(mktemp -d)"; export GNUPGHOME; gpg --batch --keyserver hkps://keys.openpgp.org --recv-keys "$GPG_KEY"; gpg --batch --verify python.tar.xz.asc python.tar.xz; command -v gpgconf > /dev/null
+   &&  gpgconf --kill all || :; rm -rf "$GNUPGHOME" python.tar.xz.asc; mkdir -p /usr/src/python; tar --extract --directory /usr/src/python --strip-components=1 --file python.tar.xz; rm python.tar.xz; cd /usr/src/python; gnuArch="$(dpkg-architecture --query DEB_BUILD_GNU_TYPE)"; ./configure --build="$gnuArch" --enable-loadable-sqlite-extensions --enable-optimizations --enable-option-checking=fatal --enable-shared --with-system-expat --without-ensurepip ; nproc="$(nproc)"; make -j "$nproc" LDFLAGS="-Wl,--strip-all" ; make install; cd /; rm -rf /usr/src/python; find /usr/local -depth \( \( -type d -a \( -name test -o -name tests -o -name idle_test \) \) -o \( -type f -a \( -name '*.pyc' -o -name '*.pyo' -o -name 'libpython*.a' \) \) -o \( -type f -a -name 'wininst-*.exe' \) \) -exec rm -rf '{}' + ; ldconfig; apt-mark auto '.*' > /dev/null; apt-mark manual $savedAptMark; find /usr/local -type f -executable -not \( -name '*tkinter*' \) -exec ldd '{}' ';' | awk '/=>/ { print $(NF-1) }' | sort -u | xargs -r dpkg-query --search | cut -d: -f1 | sort -u | xargs -r apt-mark manual ; apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false; rm -rf /var/lib/apt/lists/*; python3 --version
+RUN set -eux; for src in idle3 pydoc3 python3 python3-config; do dst="$(echo "$src" | tr -d 3)"; [ -s "/usr/local/bin/$src" ]; [ ! -e "/usr/local/bin/$dst" ]; ln -svT "$src" "/usr/local/bin/$dst"; done
+ENV PYTHON_PIP_VERSION=22.0.4
+ENV PYTHON_SETUPTOOLS_VERSION=57.5.0
+ENV PYTHON_GET_PIP_URL=https://github.com/pypa/get-pip/raw/5eaac1050023df1f5c98b173b248c260023f2278/public/get-pip.py
+ENV PYTHON_GET_PIP_SHA256=5aefe6ade911d997af080b315ebcb7f882212d070465df544e1175ac2be519b4
+RUN set -eux; savedAptMark="$(apt-mark showmanual)"; apt-get update; apt-get install -y --no-install-recommends wget; wget -O get-pip.py "$PYTHON_GET_PIP_URL"; echo "$PYTHON_GET_PIP_SHA256 *get-pip.py" | sha256sum -c -; apt-mark auto '.*' > /dev/null; [ -z "$savedAptMark" ] || apt-mark manual $savedAptMark > /dev/null; apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false; rm -rf /var/lib/apt/lists/*; export PYTHONDONTWRITEBYTECODE=1; python get-pip.py --disable-pip-version-check --no-cache-dir --no-compile "pip==$PYTHON_PIP_VERSION" "setuptools==$PYTHON_SETUPTOOLS_VERSION" ; rm -f get-pip.py; pip --version
+CMD ["python3"]
+WORKDIR /app
+COPY file:1a5c40223c46735c346581d9fd41d8d534793704cc692ed174fad9c64e808a84 in requirements.txt
+RUN pip3 install -r requirements.txt
+COPY dir:e93f8480c0b3d37537e3b3763e1c2c12dc226c6402da1003220df89c94fb362e in .
+CMD ["python" "./app.py"]
+```
+
+Outra forma de fazer isso é através de uma imagem não oficial (por conta disso, a segurança não é garantida) chamada alpine/dfimage:
+
+```bash
+➜  alias dfimage="docker run -v /var/run/docker.sock:/var/run/docker.sock --rm alpine/dfimage"
+
+➜  dfimage -sV=1.36 python-docker
+Unable to find image 'alpine/dfimage:latest' locally
+latest: Pulling from alpine/dfimage
+df20fa9351a1: Pull complete 
+820dbffe2156: Pull complete 
+Digest: sha256:4a271e763d51b7f3cca72eac9bf508502c032665dde0e4c8d5fcf6376600f64a
+Status: Downloaded newer image for alpine/dfimage:latest
+
+Analyzing python-docker
+Docker Version: 20.10.14
+GraphDriver: overlay2
+Environment Variables
+|PATH=/usr/local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+|LANG=C.UTF-8
+|GPG_KEY=E3FF2839C048B25C084DEBE9B26995E310250568
+|PYTHON_VERSION=3.8.15
+|PYTHON_PIP_VERSION=22.0.4
+|PYTHON_SETUPTOOLS_VERSION=57.5.0
+|PYTHON_GET_PIP_URL=https://github.com/pypa/get-pip/raw/5eaac1050023df1f5c98b173b248c260023f2278/public/get-pip.py
+|PYTHON_GET_PIP_SHA256=5aefe6ade911d997af080b315ebcb7f882212d070465df544e1175ac2be519b4
+
+Image user
+|User is root
+
+Potential secrets:
+Dockerfile:
+CMD ["bash"]
+ENV PATH=/usr/local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+ENV LANG=C.UTF-8
+RUN set -eux; apt-get update; apt-get install -y --no-install-recommends ca-certificates netbase tzdata ; rm -rf /var/lib/apt/lists/*
+ENV GPG_KEY=E3FF2839C048B25C084DEBE9B26995E310250568
+ENV PYTHON_VERSION=3.8.15
+RUN set -eux; savedAptMark="$(apt-mark showmanual)"; apt-get update; apt-get install -y --no-install-recommends dpkg-dev gcc gnupg dirmngr libbluetooth-dev libbz2-dev libc6-dev libexpat1-dev libffi-dev libgdbm-dev liblzma-dev libncursesw5-dev libreadline-dev libsqlite3-dev libssl-dev make tk-dev uuid-dev wget xz-utils zlib1g-dev ; wget -O python.tar.xz "https://www.python.org/ftp/python/${PYTHON_VERSION%%[a-z]*}/Python-$PYTHON_VERSION.tar.xz"; wget -O python.tar.xz.asc "https://www.python.org/ftp/python/${PYTHON_VERSION%%[a-z]*}/Python-$PYTHON_VERSION.tar.xz.asc"; GNUPGHOME="$(mktemp -d)"; export GNUPGHOME; gpg --batch --keyserver hkps://keys.openpgp.org --recv-keys "$GPG_KEY"; gpg --batch --verify python.tar.xz.asc python.tar.xz; command -v gpgconf > /dev/null  \
+        && gpgconf --kill all || :; rm -rf "$GNUPGHOME" python.tar.xz.asc; mkdir -p /usr/src/python; tar --extract --directory /usr/src/python --strip-components=1 --file python.tar.xz; rm python.tar.xz; cd /usr/src/python; gnuArch="$(dpkg-architecture --query DEB_BUILD_GNU_TYPE)"; ./configure --build="$gnuArch" --enable-loadable-sqlite-extensions --enable-optimizations --enable-option-checking=fatal --enable-shared --with-system-expat --without-ensurepip ; nproc="$(nproc)"; make -j "$nproc" LDFLAGS="-Wl,--strip-all" ; make install; cd /; rm -rf /usr/src/python; find /usr/local -depth \( \( -type d -a \( -name test -o -name tests -o -name idle_test \) \) -o \( -type f -a \( -name '*.pyc' -o -name '*.pyo' -o -name 'libpython*.a' \) \) -o \( -type f -a -name 'wininst-*.exe' \) \) -exec rm -rf '{}' + ; ldconfig; apt-mark auto '.*' > /dev/null; apt-mark manual $savedAptMark; find /usr/local -type f -executable -not \( -name '*tkinter*' \) -exec ldd '{}' ';' | awk '/=>/ { print $(NF-1) }' | sort -u | xargs -r dpkg-query --search | cut -d: -f1 | sort -u | xargs -r apt-mark manual ; apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false; rm -rf /var/lib/apt/lists/*; python3 --version
+RUN set -eux; for src in idle3 pydoc3 python3 python3-config; do dst="$(echo "$src" | tr -d 3)"; [ -s "/usr/local/bin/$src" ]; [ ! -e "/usr/local/bin/$dst" ]; ln -svT "$src" "/usr/local/bin/$dst"; done
+ENV PYTHON_PIP_VERSION=22.0.4
+ENV PYTHON_SETUPTOOLS_VERSION=57.5.0
+ENV PYTHON_GET_PIP_URL=https://github.com/pypa/get-pip/raw/5eaac1050023df1f5c98b173b248c260023f2278/public/get-pip.py
+ENV PYTHON_GET_PIP_SHA256=5aefe6ade911d997af080b315ebcb7f882212d070465df544e1175ac2be519b4
+RUN set -eux; savedAptMark="$(apt-mark showmanual)"; apt-get update; apt-get install -y --no-install-recommends wget; wget -O get-pip.py "$PYTHON_GET_PIP_URL"; echo "$PYTHON_GET_PIP_SHA256 *get-pip.py" | sha256sum -c -; apt-mark auto '.*' > /dev/null; [ -z "$savedAptMark" ] || apt-mark manual $savedAptMark > /dev/null; apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false; rm -rf /var/lib/apt/lists/*; export PYTHONDONTWRITEBYTECODE=1; python get-pip.py --disable-pip-version-check --no-cache-dir --no-compile "pip==$PYTHON_PIP_VERSION" "setuptools==$PYTHON_SETUPTOOLS_VERSION" ; rm -f get-pip.py; pip --version
+CMD ["python3"]
+WORKDIR /app
+COPY file:1a5c40223c46735c346581d9fd41d8d534793704cc692ed174fad9c64e808a84 in requirements.txt
+        app/
+        app/requirements.txt
+
+RUN pip3 install -r requirements.txt
+COPY dir:e93f8480c0b3d37537e3b3763e1c2c12dc226c6402da1003220df89c94fb362e in .
+        app/
+        app/Dockerfile
+        app/README.md
+        app/app.py
+        app/default.conf
+        app/requirements.txt
+
+CMD ["python" "./app.py"]
