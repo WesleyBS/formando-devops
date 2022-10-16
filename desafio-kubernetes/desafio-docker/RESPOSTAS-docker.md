@@ -64,7 +64,7 @@ Commercial support is available at
 ```
 
 3. Faça o mesmo que a questão anterior (2), mas utilizando a porta 90 no container. O arquivo de configuração do nginx deve existir no host e ser read-only no container.
----
+
 Aproveitando o container já criado, peguei o mesmo arquivo gerado nele ([default.conf](default.conf)) e alterei a porta para 90, no novo arquivo
 
 ```bash
@@ -118,12 +118,10 @@ def main():
 if __name__ == '__main__':
   main()
 ```
----
 
 Para este desafio, primeiro criei 2 arquivos: o [app.py](app.py) e o [requirements.txt](requirements.txt), onde o primeiro conterá o código python do desafio e o segundo terá a versão que o python deverá executar
 
 ```bash
-
 ➜ touch app.py && touch requirements.txt
 
 ➜ cat << EOF >> app.py
@@ -133,7 +131,8 @@ heredoc> def main():
 if __name__ == '__main__':
   main()
 heredoc> EOF
-
+```
+```bash
 ➜ echo "requests==2.27.1" > requirements.txt
 ```
 
@@ -239,7 +238,7 @@ f321c4cefd65   nginx        "/docker-entrypoint.…"   About a minute ago   Up A
             "Memory": 134217728,
             "NanoCpus": 500000000,
 
-➜ echo $(( 134217728 / 1024 / 1024 ))
+➜ echo $(( 134217728 / 1024 / 1024 )) # Convertendo a memória para checar
 128
 ```
 
@@ -264,7 +263,7 @@ Haveria duas formas de chegar de forma aproximida a este resultado com as ferram
 -  `docker image inspect <nome_da_imagem>`
 -  `docker history <nome_da_imagem>`
 
-E também outras formas não oficiais como o uso da imagem `alpine/dfimage`.
+E também outras formas não oficiais, como o uso da imagem `alpine/dfimage`.
 
 Um exemplo da primeira maneira:
 
@@ -306,6 +305,7 @@ Um exemplo da segunda forma:
 
 ```bash
 ➜  ~ docker history --no-trunc python-docker  | tac | tr -s ' ' | cut -d " " -f 5- | sed 's,^/bin/sh -c #(nop) ,,g' | sed 's,^/bin/sh -c,RUN,g' | sed 's, && ,\n  & ,g' | sed 's,\s*[0-9]*[\.]*[0-9]*\s*[kMG]*B\s*$,,g' | head -n -1
+
 ADD file:706105a4a2ea63ba10911afb5998d321ff745f9bcedd2e2e8efcf33f5dad584b in /
 CMD ["bash"]
 ENV PATH=/usr/local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
