@@ -221,8 +221,110 @@ kubectl create service clusterip guardaroupa --tcp=6379:6379
     - montado em /data
     - sufixo dos pvc: data
 
-Resposta:
+Resposta: Para este desafio, subentende-se que existe um serviço de compartilhamento de arquivos, como um NFS.
+
+Links auxiliares:
+
+https://levelup.gitconnected.com/how-to-use-nfs-in-kubernetes-cluster-storage-class-ed1179a83817
+
+https://kubernetes.io/docs/concepts/storage/storage-classes/
+
+https://kubernetes.io/docs/concepts/workloads/controllers/statefulset/
+
+https://stackoverflow.com/questions/41583672/kubernetes-deployments-vs-statefulsets
+
+https://github.com/kubernetes/kubernetes/issues/66994
 
 ```bash
 
+#IMPORTANTE: QUESTÃO DEVE SER FEITA COM STATEFULSET E STORAGECLASS - REFAZERA
+
+apt install nfs-kernel-server -y
+
+apt install -y nfs-common
+
+mkdir /opt/data
+
+chmod 1777 /opt/data/ #permissão para fins de lab
+
+echo -n '/opt/data *(rw,sync,no_root_squash,subtree_check)' > /etc/exports
+
+exportfs -ra
+```
+
+Criando namespace
+
+```bash
+kubectl create namespace backend
+```
+
+Manifesto Persistent Volume
+
+```yaml
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: meusiteset
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes:
+  - ReadWriteMany
+  persistentVolumeReclaimPolicy: Retain
+  nfs:
+    path: /opt/data
+    server: 172.20.3.140
+    readOnly: false
+```
+
+Manifesto Persistent Volume Claim
+
+```yaml
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: meusiteset
+spec:
+  accessModes:
+  - ReadWriteMany
+  resources:
+    requests:
+      storage: 1Gi
+```
+
+Manifesto Deployment
+
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: meusiteset
+  name: meusiteset
+  namespace: backend
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: meusiteset
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: meusiteset
+    spec:
+      containers:
+      - image: nginx
+        name: nginx
+        resources: {}
+        volumeMounts:
+        - name: meusiteset
+          mountPath: /data
+      volumes:
+      - name: meusiteset
+        persistentVolumeClaim:
+          claimName: meusiteset
+status: {}
 ```
