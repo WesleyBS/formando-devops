@@ -150,6 +150,9 @@ kubectl set image deployment meuweb nginx=nginx:1.19
       updateStrategy:
         type: Recreate
 
+
+Respostas:
+
 ```bash
 helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
 
@@ -179,7 +182,7 @@ helm install -f values.yaml --namespace ingress-nginx --create-namespace --name=
     voltar para versão 1.11.9-alpine baseado no historico que voce registrou.
     criar um ingress chamado `web` para esse deploy
 
-Respostas
+Respostas:
 
 ```bash
 kubectl create deployment pombo --image nginx:1.11.9-alpine --replicas=4
@@ -199,3 +202,27 @@ kubectl rollout undo deployment pombo --to-revision=1
 
     criar um deploy chamado `guardaroupa` com a imagem `redis`;
     criar um serviço do tipo ClusterIP desse redis com as devidas portas.
+
+Resposta
+
+```bash
+kubectl create deployment guardaroupa --image redis
+
+kubectl create service clusterip guardaroupa --tcp=6379:6379
+```
+
+### ```9``` - crie um recurso para aplicação stateful com os seguintes parametros:
+
+    - nome : meusiteset
+    - imagem nginx 
+    - no namespace backend
+    - com 3 réplicas
+    - disco de 1Gi
+    - montado em /data
+    - sufixo dos pvc: data
+
+Resposta:
+
+```bash
+
+```
