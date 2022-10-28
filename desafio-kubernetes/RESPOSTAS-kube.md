@@ -308,6 +308,8 @@ Resposta
 
 ```bash
 kubectl get services -A --output=custom-columns='NAME:.metadata.name,TYPE:.spec.type,SELECTOR:.spec.selector' | egrep "LoadBalancer|NAME" 
+
+# Verificar se não tem outra forma de filtrar o loadbalance
 ```
 
 ### ```12``` - com uma linha de comando, crie uma secret chamada `meusegredo` no namespace `segredosdesucesso` com os dados, `segredo=azul` e com o conteudo do texto abaixo.
