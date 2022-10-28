@@ -221,78 +221,56 @@ kubectl create service clusterip guardaroupa --tcp=6379:6379
     - montado em /data
     - sufixo dos pvc: data
 
-Resposta: Para este desafio, subentende-se que existe um serviço de compartilhamento de arquivos, como um NFS.
-
-Links auxiliares:
-
-https://levelup.gitconnected.com/how-to-use-nfs-in-kubernetes-cluster-storage-class-ed1179a83817
-
-https://kubernetes.io/docs/concepts/storage/storage-classes/
-
-https://kubernetes.io/docs/concepts/workloads/controllers/statefulset/
-
-https://stackoverflow.com/questions/41583672/kubernetes-deployments-vs-statefulsets
-
-https://github.com/kubernetes/kubernetes/issues/66994
-
-```bash
-
-#IMPORTANTE: QUESTÃO DEVE SER FEITA COM STATEFULSET E STORAGECLASS - REFAZERA
-
-apt install nfs-kernel-server -y
-
-apt install -y nfs-common
-
-mkdir /opt/data
-
-chmod 1777 /opt/data/ #permissão para fins de lab
-
-echo -n '/opt/data *(rw,sync,no_root_squash,subtree_check)' > /etc/exports
-
-exportfs -ra
-```
-
-Criando namespace
+Resposta deve incluir criação de namespace
 
 ```bash
 kubectl create namespace backend
 ```
 
-Manifesto Persistent Volume
+Manifesto StateFulSet
 
 ```yaml
-apiVersion: v1
-kind: PersistentVolume
+apiVersion: apps/v1
+kind: StatefulSet
 metadata:
   name: meusiteset
+  namespace: backend
 spec:
-  capacity:
-    storage: 1Gi
-  accessModes:
-  - ReadWriteMany
-  persistentVolumeReclaimPolicy: Retain
-  nfs:
-    path: /opt/data
-    server: 172.20.3.140
-    readOnly: false
+  serviceName: meusiteset
+  replicas: 3
+  selector:
+    matchLabels:
+      app: meusiteset
+  template:
+    metadata:
+      labels:
+        app: meusiteset
+    spec:
+      terminationGracePeriodSeconds: 10
+      containers:
+        - name: meusiteset
+          image: nginx
+          ports:
+            - containerPort: 80
+              name: web
+          volumeMounts:
+            - name: data
+              mountPath: /data
+  volumeClaimTemplates:
+    - metadata:
+        name: data
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        storageClassName: standard # SC padrão kind
+        resources:
+          requests:
+            storage: 1Gi
 ```
 
-Manifesto Persistent Volume Claim
+### ```10``` - crie um recurso com 2 replicas, chamado `balaclava` com a imagem `redis`, usando as labels nos pods, replicaset e deployment, `backend=balaclava` e `minhachave=semvalor` no namespace `backend`.
 
-```yaml
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: meusiteset
-spec:
-  accessModes:
-  - ReadWriteMany
-  resources:
-    requests:
-      storage: 1Gi
-```
-
-Manifesto Deployment
+Resposta:
 
 ```yaml
 apiVersion: apps/v1
@@ -300,31 +278,47 @@ kind: Deployment
 metadata:
   creationTimestamp: null
   labels:
-    app: meusiteset
-  name: meusiteset
+    app: balaclava
+  name: balaclava
   namespace: backend
 spec:
-  replicas: 3
+  replicas: 2
   selector:
     matchLabels:
-      app: meusiteset
+      app: balaclava
   strategy: {}
   template:
     metadata:
       creationTimestamp: null
       labels:
-        app: meusiteset
+        app: balaclava
+        backend: balaclava
+        minhachave: semvalor
     spec:
       containers:
-      - image: nginx
-        name: nginx
+      - image: redis
+        name: redis
         resources: {}
-        volumeMounts:
-        - name: meusiteset
-          mountPath: /data
-      volumes:
-      - name: meusiteset
-        persistentVolumeClaim:
-          claimName: meusiteset
 status: {}
+```
+
+### ```11``` - Linha de comando para listar todos os serviços do cluster do tipo `LoadBalancer` mostrando tambem `selectors`.
+
+Resposta
+
+```bash
+kubectl get services -A --output=custom-columns='NAME:.metadata.name,TYPE:.spec.type,SELECTOR:.spec.selector' | egrep "LoadBalancer|NAME" 
+```
+
+### ```12``` - com uma linha de comando, crie uma secret chamada `meusegredo` no namespace `segredosdesucesso` com os dados, `segredo=azul` e com o conteudo do texto abaixo.
+
+Resposta:
+
+```bash
+   # cat chave-secreta
+     aW5ncmVzcy1uZ2lueCAgIGluZ3Jlc3MtbmdpbngtY29udHJvbGxlciAgICAgICAgICAgICAgICAg
+     ICAgICAgICAgICAgTG9hZEJhbGFuY2VyICAgMTAuMjMzLjE3Ljg0ICAgIDE5Mi4xNjguMS4zNSAg
+     IDgwOjMxOTE2L1RDUCw0NDM6MzE3OTQvVENQICAgICAyM2ggICBhcHAua3ViZXJuZXRlcy5pby9j
+     b21wb25lbnQ9Y29udHJvbGxlcixhcHAua3ViZXJuZXRlcy5pby9pbnN0YW5jZT1pbmdyZXNzLW5n
+     aW54LGFwcC5rdWJlcm5ldGVzLmlvL25hbWU9aW5ncmVzcy1uZ
 ```
