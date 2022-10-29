@@ -314,8 +314,6 @@ kubectl get services -A --output=custom-columns='NAME:.metadata.name,TYPE:.spec.
 
 ### ```12``` - com uma linha de comando, crie uma secret chamada `meusegredo` no namespace `segredosdesucesso` com os dados, `segredo=azul` e com o conteudo do texto abaixo.
 
-Resposta:
-
 ```bash
    # cat chave-secreta
      aW5ncmVzcy1uZ2lueCAgIGluZ3Jlc3MtbmdpbngtY29udHJvbGxlciAgICAgICAgICAgICAgICAg
@@ -323,4 +321,221 @@ Resposta:
      IDgwOjMxOTE2L1RDUCw0NDM6MzE3OTQvVENQICAgICAyM2ggICBhcHAua3ViZXJuZXRlcy5pby9j
      b21wb25lbnQ9Y29udHJvbGxlcixhcHAua3ViZXJuZXRlcy5pby9pbnN0YW5jZT1pbmdyZXNzLW5n
      aW54LGFwcC5rdWJlcm5ldGVzLmlvL25hbWU9aW5ncmVzcy1uZ
+```
+
+Resposta:
+
+```bash
+kubectl create secret generic meusegredo -n segredosdesucesso --from-literal segredo=azul --from-file=chave-secreta
+```
+
+### ```13``` - qual a linha de comando para criar um configmap chamado `configsite` no namespace `site`. Deve conter uma entrada `index.html` que contenha seu nome.
+
+Resposta:
+
+```bash
+kubectl create configmap configsite -n site --from-file index.html
+```
+```yaml
+apiVersion: v1
+data:
+  index.html: |
+    wesley
+kind: ConfigMap
+metadata:
+  creationTimestamp: null
+  name: configsite
+  namespace: site
+```
+
+### ```14``` - crie um recurso chamado `meudeploy`, com a imagem `nginx:latest`, que utilize a secret criada no exercicio 11 como arquivos no diretorio `/app`.
+
+Resposta:
+
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: meudeploy
+  name: meudeploy
+  namespace: segredosdesucesso
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: meudeploy
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: meudeploy
+    spec:
+      containers:
+      - image: nginx:latest
+        name: nginx
+        resources: {}
+        volumeMounts:
+        - name: app
+          mountPath: /app
+          readOnly: true
+      volumes:
+      - name: app
+        secret:
+          secretName: meusegredo
+status: {}
+```
+
+### ```15``` - crie um recurso chamado `depconfigs`, com a imagem `nginx:latest`, que utilize o configMap criado no exercicio 12 e use seu index.html como pagina principal desse recurso.
+
+Resposta:
+
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: depconfigs
+  name: depconfigs
+  namespace: site
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: depconfigs
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: depconfigs
+    spec:
+      containers:
+      - image: nginx:latest
+        name: nginx
+        resources: {}
+        volumeMounts:
+        - name: index
+          mountPath: /usr/share/nginx/html
+      volumes:
+      - name: index
+        configMap:
+          name: configsite
+status: {}
+```
+
+### ```16``` - crie um novo recurso chamado `meudeploy-2` com a imagem `nginx:1.16` , com a label `chaves=secretas` e que use todo conteudo da secret como variavel de ambiente criada no exercicio 11.
+
+Resposta:
+
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: meudeploy-2
+    chaves: secretas
+  name: meudeploy-2
+  namespace: segredosdesucesso
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: meudeploy-2
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: meudeploy-2
+    spec:
+      containers:
+      - image: nginx:1.16
+        name: nginx
+        resources: {}
+        envFrom:
+        - secretRef:
+            name: meusegredo
+status: {}
+```
+
+### ```17``` - Linhas de comando que;
+
+    crie um namespace `cabeludo`;
+    um deploy chamado `cabelo` usando a imagem `nginx:latest`; 
+    uma secret chamada `acesso` com as entradas `username: pavao` e `password: asabranca`;
+    exponha variaveis de ambiente chamados USUARIO para username e SENHA para a password.
+
+Respostas:
+
+```bash
+kubectl create namespace cabeludo
+
+kubectl create deployment cabelo --image nginx:latest -n cabeludo
+
+kubectl create secret generic acesso --from-literal username=pavao --from-literal password=asabranca
+
+kubectl set env --from=secret/acesso deployment/cabelo -n cabeludo
+
+kubectl patch deployment cabelo --type=json -p='[{"op": "replace", "path": "/spec/template/spec/containers/0/env/0/name", "value": "SENHA"}]' -n cabeludo
+
+kubectl patch deployment cabelo --type=json -p='[{"op": "replace", "path": "/spec/template/spec/containers/0/env/1/name", "value": "USUARIO"}]' -n cabeludo
+```
+
+### ```18``` - crie um deploy `redis` usando a imagem com o mesmo nome, no namespace `cachehits` e que tenha o ponto de montagem `/data/redis` de um volume chamado `app-cache` que NÂO deverá ser persistente.
+
+Respostas:
+
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: redis
+  name: redis
+  namespace: cachehits
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: redis
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: redis
+    spec:
+      containers:
+      - image: redis
+        name: redis
+        resources: {}
+        volumeMounts:
+        - name: app-cache
+          mountPath: /data/redis
+      volumes:
+      - name: app-cache
+        emptyDir: {}
+status: {}
+```
+
+### ```19``` - com uma linha de comando escale um deploy chamado `basico` no namespace `azul` para 10 replicas.
+
+Resposta:
+
+```bash
+kubectl scale --replicas=10 deployment basico -n azul
+```
+
+### ```20``` - com uma linha de comando, crie um autoscale de cpu com 90% de no minimo 2 e maximo de 5 pods para o deploy `site` no namespace `frontend`.
+
+Resposta:
+
+```bash
+
 ```
