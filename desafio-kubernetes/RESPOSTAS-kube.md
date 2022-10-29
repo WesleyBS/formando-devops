@@ -1,11 +1,16 @@
 ### ```1``` - Com uma unica linha de comando capture somente linhas que contenham "erro" do log do pod `serverweb` no namespace `meusite` que tenha a label `app: ovo`.
 
-```bash
-kubectl logs -c serverweb -n meusite -l app=ovo | grep -i -A9 ERRO
+Respostas:
+> Palavras-chave: logs, label, grep
 
-# Invetigar outra forma de filtrar o erro e adicionar opção do -f
+```bash
+kubectl logs -f -c serverweb -n meusite -l app=ovo | grep -i -A9 ERRO
 ```
+
 ### ```2``` - Crie o manifesto de um recurso que seja executado em todos os nós do cluster com a imagem `nginx:latest` com nome `meu-spread`, nao sobreponha ou remova qualquer taint de qualquer um dos nós.
+
+Respostas:
+> Palavras-chave: daemonset, tolerations
 
 ```yaml
 apiVersion: apps/v1
@@ -44,6 +49,9 @@ spec:
 ```
 
 ### ```3``` - Crie um deploy `meu-webserver` com a imagem `nginx:latest` e um initContainer com a imagem `alpine`. O initContainer deve criar um arquivo /app/index.html, tenha o conteudo "HelloGetup" e compartilhe com o container de nginx que só poderá ser inicializado se o arquivo foi criado.
+
+Respostas:
+> Palavras-chave: initContainer, volumeMounts, command
 
 ```yaml
 apiVersion: apps/v1
@@ -87,6 +95,9 @@ spec:
 ```
 
 ### ```4``` - Crie um deploy chamado `meuweb` com a imagem `nginx:1.16` que seja executado exclusivamente no node master.
+
+Respostas:
+> Palavras-chave: label, nodeSelector, tolerations
 
 Como os nodes que subi no kind não possuem a label ```master```, adicionei esta label ao nó control-plane
 
@@ -133,6 +144,9 @@ status: {}
 
 ### ```5``` - Com uma unica linha de comando altere a imagem desse pod `meuweb` para `nginx:1.19` e salve o comando aqui no repositorio.
 
+Respostas:
+> Palavras-chave: set, image
+
 ```bash
 kubectl set image deployment meuweb nginx=nginx:1.19
 ```
@@ -152,6 +166,7 @@ kubectl set image deployment meuweb nginx=nginx:1.19
 
 
 Respostas:
+> Palavras-chave: helm, repo, install, values
 
 ```bash
 helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
@@ -170,7 +185,7 @@ EOF
 
 helm install -f values.yaml --namespace ingress-nginx --create-namespace --name=ingress-nginx ingress-nginx/ingress-nginx
 
-#validar comandos com instalação
+# validar comandos com instalação
 ```
 
 ### ```7``` - Quais as linhas de comando para: 
@@ -183,6 +198,7 @@ helm install -f values.yaml --namespace ingress-nginx --create-namespace --name=
     criar um ingress chamado `web` para esse deploy
 
 Respostas:
+> Palavras-chave: set, rollout <<**add ingress**>>
 
 ```bash
 kubectl create deployment pombo --image nginx:1.11.9-alpine --replicas=4
@@ -203,7 +219,8 @@ kubectl rollout undo deployment pombo --to-revision=1
     criar um deploy chamado `guardaroupa` com a imagem `redis`;
     criar um serviço do tipo ClusterIP desse redis com as devidas portas.
 
-Resposta
+Respostas:
+> Palavras-chave: service, clusterIP
 
 ```bash
 kubectl create deployment guardaroupa --image redis
@@ -221,7 +238,8 @@ kubectl create service clusterip guardaroupa --tcp=6379:6379
     - montado em /data
     - sufixo dos pvc: data
 
-Resposta deve incluir criação de namespace
+Respostas:
+> Palavras-chave: namespace, statefulset, storageclass, pv, pvc
 
 ```bash
 kubectl create namespace backend
@@ -270,7 +288,8 @@ spec:
 
 ### ```10``` - crie um recurso com 2 replicas, chamado `balaclava` com a imagem `redis`, usando as labels nos pods, replicaset e deployment, `backend=balaclava` e `minhachave=semvalor` no namespace `backend`.
 
-Resposta:
+Respostas:
+> Palavras-chave: template, label
 
 ```yaml
 apiVersion: apps/v1
@@ -304,7 +323,8 @@ status: {}
 
 ### ```11``` - Linha de comando para listar todos os serviços do cluster do tipo `LoadBalancer` mostrando tambem `selectors`.
 
-Resposta
+Respostas:
+> Palavras-chave: custom-columns
 
 ```bash
 kubectl get services -A --output=custom-columns='NAME:.metadata.name,TYPE:.spec.type,SELECTOR:.spec.selector' | egrep "LoadBalancer|NAME" 
@@ -315,7 +335,7 @@ kubectl get services -A --output=custom-columns='NAME:.metadata.name,TYPE:.spec.
 ### ```12``` - com uma linha de comando, crie uma secret chamada `meusegredo` no namespace `segredosdesucesso` com os dados, `segredo=azul` e com o conteudo do texto abaixo.
 
 ```bash
-   # cat chave-secreta
+# cat chave-secreta
      aW5ncmVzcy1uZ2lueCAgIGluZ3Jlc3MtbmdpbngtY29udHJvbGxlciAgICAgICAgICAgICAgICAg
      ICAgICAgICAgICAgTG9hZEJhbGFuY2VyICAgMTAuMjMzLjE3Ljg0ICAgIDE5Mi4xNjguMS4zNSAg
      IDgwOjMxOTE2L1RDUCw0NDM6MzE3OTQvVENQICAgICAyM2ggICBhcHAua3ViZXJuZXRlcy5pby9j
@@ -323,7 +343,8 @@ kubectl get services -A --output=custom-columns='NAME:.metadata.name,TYPE:.spec.
      aW54LGFwcC5rdWJlcm5ldGVzLmlvL25hbWU9aW5ncmVzcy1uZ
 ```
 
-Resposta:
+Respostas:
+> Palavras-chave: from-literal, from-file
 
 ```bash
 kubectl create secret generic meusegredo -n segredosdesucesso --from-literal segredo=azul --from-file=chave-secreta
@@ -331,7 +352,8 @@ kubectl create secret generic meusegredo -n segredosdesucesso --from-literal seg
 
 ### ```13``` - qual a linha de comando para criar um configmap chamado `configsite` no namespace `site`. Deve conter uma entrada `index.html` que contenha seu nome.
 
-Resposta:
+Respostas:
+> Palavras-chave: from-file
 
 ```bash
 kubectl create configmap configsite -n site --from-file index.html
@@ -350,7 +372,8 @@ metadata:
 
 ### ```14``` - crie um recurso chamado `meudeploy`, com a imagem `nginx:latest`, que utilize a secret criada no exercicio 11 como arquivos no diretorio `/app`.
 
-Resposta:
+Respostas:
+> Palavras-chave: volume, secretName
 
 ```yaml
 apiVersion: apps/v1
@@ -390,7 +413,8 @@ status: {}
 
 ### ```15``` - crie um recurso chamado `depconfigs`, com a imagem `nginx:latest`, que utilize o configMap criado no exercicio 12 e use seu index.html como pagina principal desse recurso.
 
-Resposta:
+Respostas:
+> Palavras-chave: volumeMounts, configmap
 
 ```yaml
 apiVersion: apps/v1
@@ -429,7 +453,8 @@ status: {}
 
 ### ```16``` - crie um novo recurso chamado `meudeploy-2` com a imagem `nginx:1.16` , com a label `chaves=secretas` e que use todo conteudo da secret como variavel de ambiente criada no exercicio 11.
 
-Resposta:
+Respostas:
+> Palavras-chave: envFrom, secretRef
 
 ```yaml
 apiVersion: apps/v1
@@ -471,6 +496,7 @@ status: {}
     exponha variaveis de ambiente chamados USUARIO para username e SENHA para a password.
 
 Respostas:
+> Palavras-chave: set, env, patch, type, json
 
 ```bash
 kubectl create namespace cabeludo
@@ -489,6 +515,7 @@ kubectl patch deployment cabelo --type=json -p='[{"op": "replace", "path": "/spe
 ### ```18``` - crie um deploy `redis` usando a imagem com o mesmo nome, no namespace `cachehits` e que tenha o ponto de montagem `/data/redis` de um volume chamado `app-cache` que NÂO deverá ser persistente.
 
 Respostas:
+> Palavras-chave: volume, emptyDir
 
 ```yaml
 apiVersion: apps/v1
@@ -526,7 +553,8 @@ status: {}
 
 ### ```19``` - com uma linha de comando escale um deploy chamado `basico` no namespace `azul` para 10 replicas.
 
-Resposta:
+Respostas:
+> Palavras-chave: scale, replicas
 
 ```bash
 kubectl scale --replicas=10 deployment basico -n azul
@@ -534,8 +562,72 @@ kubectl scale --replicas=10 deployment basico -n azul
 
 ### ```20``` - com uma linha de comando, crie um autoscale de cpu com 90% de no minimo 2 e maximo de 5 pods para o deploy `site` no namespace `frontend`.
 
-Resposta:
+Respostas:
+> Palavras-chave: autoscale, cpu-percent
 
 ```bash
+kubectl autoscale deployment site --min=2 --max=5 --cpu-percent=90 -n frontend
+```
 
+### ```21``` - com uma linha de comando, descubra o conteudo da secret `piadas` no namespace `meussegredos` com a entrada `segredos`.
+
+Respostas:
+> Palavras-chave: get, jsonpath, base64
+
+```bash
+kubectl get secrets/piadas -o jsonpath="{.data.segredos}" -n meussegredos | base64 -d
+```
+
+### ```22``` - marque o node o nó `k8s-worker1` do cluster para que nao aceite nenhum novo pod.
+
+Respostas:
+> Palavras-chave: taint, NoSchedule
+
+```bash
+kubectl taint nodes k8s-worker1 key1=value1:NoSchedule
+```
+
+### ```23``` - esvazie totalmente e de uma unica vez esse mesmo nó com uma linha de comando.
+
+Respostas:
+> Palavras-chave: taint, NoExecute
+
+```bash
+kubectl taint nodes k8s-worker1 key1=value1:NoExecute
+```
+
+### ```24``` - qual a maneira de garantir a criaçao de um pod ( sem usar o kubectl ou api do k8s ) em um nó especifico.
+
+Respostas:
+> Palavras-chave: static-pod, nó, manifests
+
+______
+Através do << **static-pod** >>, que, em resumo, consite em usar o kubelet para criar o pod determinado, enviando o arquivo yaml do pod para o diretório */etc/kubernetes/manifests* de um nó específico.
+______
+
+### ```25``` - criar uma serviceaccount `userx` no namespace `developer`. essa serviceaccount só pode ter permissao total sobre pods (inclusive logs) e deployments no namespace `developer`. descreva o processo para validar o acesso ao namespace do jeito que achar melhor.
+
+Respostas:
+> Palavras-chave: 
+
+```bash
+# VOLTAR A ESTA QUESTÃO
+```
+
+### ```26``` - criar a key e certificado cliente para uma usuaria chamada `jane` e que tenha permissao somente de listar pods no namespace `frontend`. liste os comandos utilizados.
+
+Respostas:
+> Palavras-chave: 
+
+```bash
+# VOLTAR A ESTA QUESTÃO
+```
+
+### ```27``` - qual o `kubectl get` que traz o status do scheduler, controller-manager e etcd ao mesmo tempo
+
+Respostas:
+> Palavras-chave: component, stat, uses
+
+```bash
+kubectl get componentstatuses
 ```
