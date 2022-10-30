@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: meuweb
+  name: meuweb
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: meuweb
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: meuweb
+    spec:
+      nodeSelector:
+        dedicated: master
+      tolerations:
+      - key: node-role.kubernetes.io/control-plane
+        operator: Exists
+        effect: NoSchedule
+      - key: node-role.kubernetes.io/master
+        operator: Exists
+        effect: NoSchedule
+      containers:
+      - image: nginx:1.16
+        name: nginx
+        resources: {}
+status: {}

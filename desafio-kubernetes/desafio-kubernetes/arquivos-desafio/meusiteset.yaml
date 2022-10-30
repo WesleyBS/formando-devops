@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: meusiteset
+  namespace: backend
+spec:
+  serviceName: meusiteset
+  replicas: 3
+  selector:
+    matchLabels:
+      app: meusiteset
+  template:
+    metadata:
+      labels:
+        app: meusiteset
+    spec:
+      terminationGracePeriodSeconds: 10
+      containers:
+        - name: meusiteset
+          image: nginx
+          ports:
+            - containerPort: 80
+              name: web
+          volumeMounts:
+            - name: data
+              mountPath: /data
+  volumeClaimTemplates:
+    - metadata:
+        name: data
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        storageClassName: standard # SC padrão kind
+        resources:
+          requests:
+            storage: 1Gi

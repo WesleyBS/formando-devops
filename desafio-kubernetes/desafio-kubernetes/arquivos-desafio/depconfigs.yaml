@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: depconfigs
+  name: depconfigs
+  namespace: site
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: depconfigs
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: depconfigs
+    spec:
+      containers:
+      - image: nginx:latest
+        name: nginx
+        resources: {}
+        volumeMounts:
+        - name: index
+          mountPath: /usr/share/nginx/html
+      volumes:
+      - name: index
+        configMap:
+          name: configsite
+status: {}

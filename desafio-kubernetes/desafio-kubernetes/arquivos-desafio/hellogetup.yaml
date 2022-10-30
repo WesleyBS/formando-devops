@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: meu-webserver
+  name: meu-webserver
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: meu-webserver
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: meu-webserver
+    spec:
+      containers:
+      - name: nginx
+        image: nginx
+        ports:
+        - containerPort: 80
+        volumeMounts:
+        - name: workdir
+          mountPath: /usr/share/nginx/html
+      initContainers:
+      - name: index
+        image: alpine
+        command: ['sh', '-c', 'touch /app/index.html && echo "HelloGetup" > /app/index.html']
+        volumeMounts:
+        - name: workdir
+          mountPath: "/app"
+      dnsPolicy: Default
+      volumes:
+      - name: workdir
+        emptyDir: {}

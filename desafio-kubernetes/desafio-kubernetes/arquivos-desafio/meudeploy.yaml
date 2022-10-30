@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: meudeploy
+  name: meudeploy
+  namespace: segredosdesucesso
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: meudeploy
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: meudeploy
+    spec:
+      containers:
+      - image: nginx:latest
+        name: nginx
+        resources: {}
+        volumeMounts:
+        - name: app
+          mountPath: /app
+          readOnly: true
+      volumes:
+      - name: app
+        secret:
+          secretName: meusegredo
+status: {}
