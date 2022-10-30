@@ -183,9 +183,7 @@ controller:
         type: Recreate
 EOF
 
-helm install -f values.yaml --namespace ingress-nginx --create-namespace --name=ingress-nginx ingress-nginx/ingress-nginx
-
-# validar comandos com instalação
+helm install nginx-ingress ingress-nginx/ingress-nginx -f values.yaml
 ```
 
 ### ```7``` - Quais as linhas de comando para: 
@@ -198,7 +196,7 @@ helm install -f values.yaml --namespace ingress-nginx --create-namespace --name=
     criar um ingress chamado `web` para esse deploy
 
 Respostas:
-> Palavras-chave: set, rollout <<**add ingress**>>
+> Palavras-chave: set, rollout, ingress, rule
 
 ```bash
 kubectl create deployment pombo --image nginx:1.11.9-alpine --replicas=4
@@ -211,7 +209,13 @@ kubectl rollout history deployment pombo
 
 kubectl rollout undo deployment pombo --to-revision=1
 
-# fazer ingress
+kubectl create service clusterip pombo --clusterip="None"
+
+kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.3.0/deploy/static/provider/cloud/deploy.yaml
+
+helm upgrade --install ingress-nginx ingress-nginx --repo https://kubernetes.github.io/ingress-nginx --namespace ingress-nginx --create-namespace
+
+kubectl create ingress web --class=nginx --rule="local.lab/=pombo:80"
 ```
 
 ### ```8``` - Linhas de comando para; 
@@ -324,12 +328,14 @@ status: {}
 ### ```11``` - Linha de comando para listar todos os serviços do cluster do tipo `LoadBalancer` mostrando tambem `selectors`.
 
 Respostas:
-> Palavras-chave: custom-columns
+> Palavras-chave: custom-columns, go-template
 
 ```bash
 kubectl get services -A --output=custom-columns='NAME:.metadata.name,TYPE:.spec.type,SELECTOR:.spec.selector' | egrep "LoadBalancer|NAME" 
 
-# Verificar se não tem outra forma de filtrar o loadbalance
+ou
+
+echo " NAME         TYPE       SELECTOR" && kubectl get service -A -o go-template='{{range $index, $element := .items}} {{ if (eq $element.spec.type "LoadBalancer")}}{{$element.metadata.name}}  {{$element.spec.type}}  {{$element.spec.selector}}  {{"\n"}}{{ end }}{{end}}'
 ```
 
 ### ```12``` - com uma linha de comando, crie uma secret chamada `meusegredo` no namespace `segredosdesucesso` com os dados, `segredo=azul` e com o conteudo do texto abaixo.
@@ -608,10 +614,56 @@ ______
 ### ```25``` - criar uma serviceaccount `userx` no namespace `developer`. essa serviceaccount só pode ter permissao total sobre pods (inclusive logs) e deployments no namespace `developer`. descreva o processo para validar o acesso ao namespace do jeito que achar melhor.
 
 Respostas:
-> Palavras-chave: 
+> Palavras-chave: serviceaccount, clusterrole, clusterrolebinding
 
-```bash
-# VOLTAR A ESTA QUESTÃO
+```yaml
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  creationTimestamp: null
+  name: userx
+  namespace: developer
+
+---
+
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  creationTimestamp: null
+  name: userx
+rules:
+- apiGroups:
+  - ""
+  resources:
+  - pods
+  - pods/log
+  verbs:
+  - '*'
+- apiGroups:
+  - apps
+  resources:
+  - deployments
+  - deployments/log
+  verbs:
+  - '*'
+
+---
+
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  creationTimestamp: null
+  name: userx
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: userx
+subjects:
+- kind: ServiceAccount
+  name: userx
+  namespace: developer
+
+# FAZER VALIDAÇÃO
 ```
 
 ### ```26``` - criar a key e certificado cliente para uma usuaria chamada `jane` e que tenha permissao somente de listar pods no namespace `frontend`. liste os comandos utilizados.
@@ -620,7 +672,26 @@ Respostas:
 > Palavras-chave: 
 
 ```bash
-# VOLTAR A ESTA QUESTÃO
+
+openssl genrsa -out jane.key 2048
+
+openssl req -new -key jane.key -out jane.csr
+
+# Dentro de um nó master
+---
+openssl x509 -req -in jane.csr -CA /etc/kubernetes/pki/ca.crt -CAkey /etc/kubernetes/pki/ca.key -CAcreateserial -out jane.crt -days 500
+---
+
+kubectl create clusterrole jane --verb=list --resource=pods -n frontend
+
+kubectl create clusterrolebinding jane --clusterrole jane --user jane
+
+kubectl config set-credentials jane --client-certificate=jane.crt --client-key=jane.key
+
+kubectl config set-context jane-context --cluster=kind-meuk8s --namespace=frontend --user=jane
+
+# VALIDAR
+
 ```
 
 ### ```27``` - qual o `kubectl get` que traz o status do scheduler, controller-manager e etcd ao mesmo tempo
