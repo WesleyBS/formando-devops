@@ -665,17 +665,9 @@ subjects:
 ```
 
 ```bash
-# A validação é feita através da exportação e uso do token do serviceAccount "userx"
+# Validação
 
-kubectl create token userx
-
-export NAMESPACE_SA=developer
-
-export TEAM_SA=userx
-
-$ export TOKEN=$(kubectl get $(kubectl get secret -o name -n ${NAMESPACE_SA} | grep  ${TEAM_SA} ) -o jsonpath='{.data.token}' -n ${NAMESPACE_SA} | base64 -d)
-
-kubectl --token=${TOKEN} get deploy,pod -n developer
+kubectl auth can-i {get,list,watch,create,delete,update,patch} {pods,pods/log,deployments,deployments/log} --namespace developer --as system:serviceaccount:developer:userx
 ```
 
 ### ```26``` - criar a key e certificado cliente para uma usuaria chamada `jane` e que tenha permissao somente de listar pods no namespace `frontend`. liste os comandos utilizados.
