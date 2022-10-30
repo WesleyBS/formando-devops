@@ -662,14 +662,26 @@ subjects:
 - kind: ServiceAccount
   name: userx
   namespace: developer
+```
 
-# FAZER VALIDAÇÃO
+```bash
+# A validação é feita através da exportação e uso do token do serviceAccount "userx"
+
+kubectl create token userx
+
+export NAMESPACE_SA=developer
+
+export TEAM_SA=userx
+
+$ export TOKEN=$(kubectl get $(kubectl get secret -o name -n ${NAMESPACE_SA} | grep  ${TEAM_SA} ) -o jsonpath='{.data.token}' -n ${NAMESPACE_SA} | base64 -d)
+
+kubectl --token=${TOKEN} get deploy,pod -n developer
 ```
 
 ### ```26``` - criar a key e certificado cliente para uma usuaria chamada `jane` e que tenha permissao somente de listar pods no namespace `frontend`. liste os comandos utilizados.
 
 Respostas:
-> Palavras-chave: 
+> Palavras-chave: openssl, CR, CRB, set-credentials, set-context
 
 ```bash
 
@@ -689,9 +701,6 @@ kubectl create clusterrolebinding jane --clusterrole jane --user jane
 kubectl config set-credentials jane --client-certificate=jane.crt --client-key=jane.key
 
 kubectl config set-context jane-context --cluster=kind-meuk8s --namespace=frontend --user=jane
-
-# VALIDAR
-
 ```
 
 ### ```27``` - qual o `kubectl get` que traz o status do scheduler, controller-manager e etcd ao mesmo tempo
